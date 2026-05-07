@@ -1,0 +1,2033 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VAIL · Adaptive Syllabus Dashboard — Marketing Pilot 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #070b14;
+  --surface: #0d1526;
+  --surface2: #111d35;
+  --border: rgba(99,179,255,0.12);
+  --accent: #2d7fff;
+  --accent2: #00e5b0;
+  --accent3: #ff6b6b;
+  --accent4: #ffc04d;
+  --text: #e8f0fe;
+  --text-muted: #7a90b8;
+  --text-dim: #3d5080;
+  --red-high: #ff4545;
+  --red-med: #ff8c42;
+  --blue-ok: #3da9ff;
+  --green-ok: #00d68f;
+  --font-display: 'Syne', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+  --glow: 0 0 30px rgba(45,127,255,0.18);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
+
+/* NAV */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: rgba(7,11,20,0.92);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 32px;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 60px;
+}
+.nav-brand {
+  display: flex; align-items: center; gap: 12px;
+}
+.nav-logo {
+  width: 32px; height: 32px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-weight: 800; font-size: 14px;
+  color: #fff;
+}
+.nav-title {
+  font-family: var(--font-display); font-weight: 700; font-size: 16px;
+  letter-spacing: 0.02em;
+}
+.nav-subtitle { font-size: 11px; color: var(--text-muted); }
+.nav-links { display: flex; gap: 4px; }
+.nav-link {
+  padding: 6px 14px; border-radius: 6px;
+  font-size: 12px; font-weight: 500;
+  color: var(--text-muted); cursor: pointer;
+  transition: all 0.2s;
+  background: none; border: none;
+}
+.nav-link:hover, .nav-link.active {
+  background: rgba(45,127,255,0.15);
+  color: var(--accent);
+}
+.nav-badge {
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  color: #fff; font-size: 10px; font-weight: 700;
+  padding: 3px 10px; border-radius: 20px;
+  letter-spacing: 0.08em;
+}
+
+/* SECTIONS */
+.section { display: none; padding: 80px 0 40px; min-height: 100vh; }
+.section.active { display: block; }
+
+.container { max-width: 1280px; margin: 0 auto; padding: 0 32px; }
+
+/* PAGE HEADER */
+.page-header {
+  padding: 40px 0 32px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 32px;
+}
+.page-header .eyebrow {
+  font-family: var(--font-mono); font-size: 11px; font-weight: 500;
+  color: var(--accent2); letter-spacing: 0.15em; text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.page-header h1 {
+  font-family: var(--font-display); font-size: 36px; font-weight: 800;
+  line-height: 1.1; letter-spacing: -0.02em;
+}
+.page-header p {
+  margin-top: 8px; color: var(--text-muted); font-size: 15px; max-width: 600px;
+}
+.live-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(0,229,176,0.12); border: 1px solid rgba(0,229,176,0.3);
+  color: var(--accent2); font-size: 11px; font-weight: 600;
+  padding: 4px 12px; border-radius: 20px;
+  letter-spacing: 0.08em;
+}
+.live-dot {
+  width: 6px; height: 6px; background: var(--accent2); border-radius: 50%;
+  animation: pulse 1.5s infinite;
+}
+@keyframes pulse {
+  0%,100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.8); }
+}
+
+/* STATS GRID */
+.stats-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;
+  margin-bottom: 32px;
+}
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px; padding: 20px;
+  position: relative; overflow: hidden;
+  transition: transform 0.2s;
+}
+.stat-card:hover { transform: translateY(-2px); }
+.stat-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+}
+.stat-card.blue::before { background: linear-gradient(90deg, var(--accent), transparent); }
+.stat-card.green::before { background: linear-gradient(90deg, var(--accent2), transparent); }
+.stat-card.red::before { background: linear-gradient(90deg, var(--accent3), transparent); }
+.stat-card.yellow::before { background: linear-gradient(90deg, var(--accent4), transparent); }
+.stat-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; }
+.stat-value { font-family: var(--font-display); font-size: 32px; font-weight: 800; line-height: 1; }
+.stat-value.blue { color: var(--accent); }
+.stat-value.green { color: var(--accent2); }
+.stat-value.red { color: var(--accent3); }
+.stat-value.yellow { color: var(--accent4); }
+.stat-sub { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+
+/* GRID LAYOUTS */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+.grid-65-35 { display: grid; grid-template-columns: 1.8fr 1fr; gap: 20px; }
+.grid-35-65 { display: grid; grid-template-columns: 1fr 1.8fr; gap: 20px; }
+
+/* CARDS */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px; padding: 24px;
+  margin-bottom: 20px;
+}
+.card-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 20px;
+}
+.card-title {
+  font-family: var(--font-display); font-size: 16px; font-weight: 700;
+  display: flex; align-items: center; gap: 10px;
+}
+.card-icon {
+  width: 28px; height: 28px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px;
+}
+.card-tag {
+  font-family: var(--font-mono); font-size: 10px;
+  padding: 3px 10px; border-radius: 20px;
+  border: 1px solid; letter-spacing: 0.08em;
+}
+.tag-blue { border-color: var(--accent); color: var(--accent); background: rgba(45,127,255,0.08); }
+.tag-green { border-color: var(--accent2); color: var(--accent2); background: rgba(0,229,176,0.08); }
+.tag-red { border-color: var(--accent3); color: var(--accent3); background: rgba(255,107,107,0.08); }
+.tag-yellow { border-color: var(--accent4); color: var(--accent4); background: rgba(255,192,77,0.08); }
+
+/* HEATMAP */
+.heatmap-wrapper { overflow-x: auto; }
+.heatmap-table { width: 100%; border-collapse: separate; border-spacing: 4px; }
+.heatmap-table th {
+  font-family: var(--font-mono); font-size: 10px;
+  color: var(--text-muted); padding: 6px 8px;
+  text-align: center; font-weight: 500; letter-spacing: 0.05em;
+}
+.heatmap-table th.skill-col { text-align: left; width: 200px; }
+.heatmap-cell {
+  border-radius: 6px; padding: 8px 6px;
+  text-align: center; font-family: var(--font-mono); font-size: 11px; font-weight: 500;
+  cursor: pointer; transition: all 0.2s; position: relative;
+}
+.heatmap-cell:hover { transform: scale(1.08); z-index: 10; box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
+.heatmap-skill {
+  font-family: var(--font-body); font-size: 11px; color: var(--text-muted);
+  text-align: left; padding: 8px 8px; white-space: nowrap;
+}
+.hc-low { background: rgba(61,169,255,0.5); color: #fff; }
+.hc-mid-low { background: rgba(255,140,66,0.55); color: #fff; }
+.hc-mid { background: rgba(255,107,107,0.65); color: #fff; }
+.hc-high { background: rgba(220,30,30,0.75); color: #fff; }
+.hc-critical { background: rgba(180,0,0,0.85); color: #fff; }
+
+/* SKILL GAP BARS */
+.skill-gap-item { margin-bottom: 14px; }
+.skill-gap-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+.skill-gap-name { font-size: 12px; font-weight: 500; }
+.skill-gap-score { font-family: var(--font-mono); font-size: 11px; }
+.skill-gap-bar { height: 6px; background: rgba(255,255,255,0.06); border-radius: 3px; overflow: hidden; }
+.skill-gap-fill { height: 100%; border-radius: 3px; transition: width 1.2s cubic-bezier(.16,1,.3,1); }
+
+/* PIPELINE */
+.pipeline {
+  display: flex; align-items: center; gap: 0;
+  overflow-x: auto; padding: 20px 0;
+}
+.pipe-step {
+  display: flex; flex-direction: column; align-items: center;
+  min-width: 130px; flex: 1;
+}
+.pipe-node {
+  width: 56px; height: 56px; border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; margin-bottom: 10px;
+  position: relative; transition: transform 0.2s;
+  cursor: pointer;
+}
+.pipe-node:hover { transform: scale(1.12); }
+.pipe-step-label {
+  font-family: var(--font-display); font-size: 11px; font-weight: 700;
+  text-align: center; letter-spacing: 0.03em; margin-bottom: 3px;
+}
+.pipe-step-sub { font-size: 10px; color: var(--text-muted); text-align: center; max-width: 110px; }
+.pipe-arrow {
+  color: var(--text-dim); font-size: 20px; flex-shrink: 0;
+  margin: 0 4px; padding-bottom: 28px;
+}
+.pipe-node-1 { background: linear-gradient(135deg, #1a3a6e, #2563eb); border: 1px solid rgba(45,127,255,0.4); }
+.pipe-node-2 { background: linear-gradient(135deg, #1a4040, #0891b2); border: 1px solid rgba(0,200,220,0.4); }
+.pipe-node-3 { background: linear-gradient(135deg, #3b1e54, #7c3aed); border: 1px solid rgba(124,58,237,0.4); }
+.pipe-node-4 { background: linear-gradient(135deg, #1a3d2b, #059669); border: 1px solid rgba(5,150,105,0.4); }
+.pipe-node-5 { background: linear-gradient(135deg, #4a2600, #d97706); border: 1px solid rgba(217,119,6,0.4); }
+.pipe-node-6 { background: linear-gradient(135deg, #3d0d0d, #dc2626); border: 1px solid rgba(220,38,38,0.4); }
+
+/* MODULE CARDS */
+.module-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.module-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px; overflow: hidden;
+  cursor: pointer; transition: all 0.25s;
+}
+.module-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,0.4), var(--glow); border-color: var(--accent); }
+.module-card.active { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(45,127,255,0.3); }
+.module-thumb {
+  height: 90px; display: flex; align-items: center; justify-content: center;
+  font-size: 32px; position: relative; overflow: hidden;
+}
+.module-thumb::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(180deg, transparent 50%, rgba(7,11,20,0.6));
+}
+.module-body { padding: 14px; }
+.module-skill-tag {
+  font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--accent2); margin-bottom: 6px;
+}
+.module-title { font-family: var(--font-display); font-size: 13px; font-weight: 700; margin-bottom: 6px; line-height: 1.3; }
+.module-meta { display: flex; gap: 10px; font-size: 10px; color: var(--text-muted); }
+.module-status {
+  margin-top: 8px; font-size: 10px; padding: 3px 8px; border-radius: 20px;
+  display: inline-block; font-weight: 600; letter-spacing: 0.05em;
+}
+.status-live { background: rgba(0,214,143,0.15); color: var(--green-ok); border: 1px solid rgba(0,214,143,0.3); }
+.status-wip { background: rgba(255,192,77,0.15); color: var(--accent4); border: 1px solid rgba(255,192,77,0.3); }
+.status-queued { background: rgba(120,120,160,0.15); color: var(--text-muted); border: 1px solid rgba(120,120,160,0.2); }
+
+/* MODULE DETAIL */
+#module-detail { display: none; }
+#module-detail.visible { display: block; }
+.module-detail-container {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px; overflow: hidden;
+  margin-top: 24px;
+}
+.module-detail-header {
+  padding: 28px 32px;
+  background: linear-gradient(135deg, var(--surface) 0%, var(--surface2) 100%);
+  border-bottom: 1px solid var(--border);
+  display: flex; justify-content: space-between; align-items: flex-start;
+}
+.module-detail-content { padding: 32px; }
+.detail-tabs { display: flex; gap: 4px; margin-bottom: 28px; }
+.detail-tab {
+  padding: 8px 18px; border-radius: 8px; font-size: 13px; font-weight: 500;
+  cursor: pointer; background: none; border: 1px solid transparent;
+  color: var(--text-muted); transition: all 0.2s;
+}
+.detail-tab.active { background: rgba(45,127,255,0.15); border-color: var(--accent); color: var(--accent); }
+.detail-tab:hover:not(.active) { background: var(--surface2); color: var(--text); }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* VIDEO SECTION */
+.video-frame {
+  background: linear-gradient(135deg, #0a1628, #0d2040);
+  border: 1px solid var(--border);
+  border-radius: 14px; height: 320px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  position: relative; overflow: hidden;
+  margin-bottom: 20px;
+}
+.video-frame::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 50% 50%, rgba(45,127,255,0.08) 0%, transparent 70%);
+}
+.play-btn {
+  width: 72px; height: 72px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px; cursor: pointer; transition: transform 0.2s;
+  box-shadow: 0 0 40px rgba(45,127,255,0.4);
+  z-index: 1; border: none; color: white;
+}
+.play-btn:hover { transform: scale(1.1); }
+.video-title-overlay {
+  z-index: 1; margin-top: 16px; text-align: center;
+}
+.video-info-bar {
+  display: flex; align-items: center; gap: 20px;
+  padding: 12px 20px;
+  background: var(--surface2); border-radius: 10px;
+  font-size: 12px; color: var(--text-muted);
+}
+.video-tag { color: var(--accent); font-weight: 600; }
+
+/* KNOWLEDGE SUMMARY */
+.knowledge-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.knowledge-item {
+  background: var(--surface2); border-radius: 10px; padding: 14px;
+  border-left: 3px solid var(--accent);
+}
+.knowledge-item .ki-num {
+  font-family: var(--font-display); font-size: 22px; font-weight: 800;
+  color: var(--accent); line-height: 1;
+}
+.knowledge-item .ki-title { font-weight: 600; font-size: 13px; margin: 4px 0; }
+.knowledge-item .ki-desc { font-size: 11px; color: var(--text-muted); }
+
+/* QUIZ */
+.quiz-progress { display: flex; gap: 6px; margin-bottom: 24px; }
+.quiz-dot { width: 28px; height: 4px; border-radius: 2px; background: var(--text-dim); transition: background 0.3s; }
+.quiz-dot.done { background: var(--accent2); }
+.quiz-dot.current { background: var(--accent); }
+.question-card {
+  background: var(--surface2); border-radius: 14px; padding: 24px;
+  border: 1px solid var(--border); margin-bottom: 16px;
+}
+.question-text { font-size: 15px; font-weight: 500; margin-bottom: 18px; }
+.option-btn {
+  display: flex; align-items: center; gap: 12px;
+  width: 100%; padding: 12px 16px; border-radius: 10px;
+  background: var(--surface); border: 1px solid var(--border);
+  color: var(--text); font-family: var(--font-body); font-size: 13px;
+  cursor: pointer; text-align: left; margin-bottom: 8px;
+  transition: all 0.15s;
+}
+.option-btn:hover { background: rgba(45,127,255,0.1); border-color: var(--accent); }
+.option-btn.correct { background: rgba(0,214,143,0.15); border-color: var(--accent2); color: var(--accent2); }
+.option-btn.wrong { background: rgba(255,69,69,0.15); border-color: var(--accent3); color: var(--accent3); }
+.option-letter {
+  width: 24px; height: 24px; border-radius: 6px;
+  background: var(--surface2); font-family: var(--font-mono);
+  font-size: 11px; font-weight: 600; display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.quiz-nav { display: flex; justify-content: space-between; align-items: center; }
+.btn {
+  padding: 10px 22px; border-radius: 10px;
+  font-family: var(--font-body); font-size: 13px; font-weight: 600;
+  cursor: pointer; border: none; transition: all 0.2s;
+}
+.btn-primary { background: linear-gradient(135deg, var(--accent), #1a5fcc); color: #fff; }
+.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(45,127,255,0.35); }
+.btn-secondary { background: var(--surface2); border: 1px solid var(--border); color: var(--text-muted); }
+.btn-secondary:hover { background: var(--surface); color: var(--text); }
+.btn-green { background: linear-gradient(135deg, var(--accent2), #00a878); color: #fff; }
+.btn-green:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,229,176,0.3); }
+.btn-sm { padding: 6px 14px; font-size: 12px; }
+.quiz-result {
+  text-align: center; padding: 40px;
+  background: var(--surface2); border-radius: 14px;
+}
+.result-score {
+  font-family: var(--font-display); font-size: 72px; font-weight: 800;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.result-label { font-size: 16px; color: var(--text-muted); margin-bottom: 8px; }
+
+/* SURVEY */
+.survey-question { margin-bottom: 24px; }
+.survey-q-text { font-size: 14px; font-weight: 500; margin-bottom: 12px; }
+.likert-scale { display: flex; gap: 8px; }
+.likert-btn {
+  flex: 1; padding: 10px 4px; border-radius: 8px; text-align: center;
+  background: var(--surface2); border: 1px solid var(--border);
+  font-size: 11px; color: var(--text-muted); cursor: pointer;
+  transition: all 0.15s; font-family: var(--font-body);
+}
+.likert-btn:hover { border-color: var(--accent); color: var(--accent); background: rgba(45,127,255,0.1); }
+.likert-btn.selected { background: rgba(45,127,255,0.2); border-color: var(--accent); color: var(--accent); font-weight: 600; }
+.survey-result {
+  background: var(--surface2); border-radius: 14px; padding: 24px;
+}
+.improvement-display { display: flex; align-items: center; gap: 24px; padding: 24px; }
+.improve-before, .improve-after {
+  flex: 1; text-align: center;
+}
+.improve-num {
+  font-family: var(--font-display); font-size: 48px; font-weight: 800; line-height: 1;
+}
+.improve-before .improve-num { color: var(--accent3); }
+.improve-after .improve-num { color: var(--accent2); }
+.improve-arrow { font-size: 28px; color: var(--text-muted); }
+.improve-bar-container { margin-top: 20px; }
+.improve-bars { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.improve-bar-item { }
+.improve-bar-label { font-size: 11px; color: var(--text-muted); margin-bottom: 5px; }
+.improve-bar-track { height: 8px; background: rgba(255,255,255,0.06); border-radius: 4px; overflow: hidden; position: relative; }
+.improve-bar-before { height: 100%; border-radius: 4px; background: rgba(255,107,107,0.5); }
+.improve-bar-after { height: 100%; border-radius: 4px; background: var(--accent2); margin-top: 3px; }
+.cohort-tabs { display: flex; gap: 8px; margin-bottom: 20px; }
+.cohort-tab {
+  padding: 6px 16px; border-radius: 20px; font-size: 12px; font-weight: 600;
+  cursor: pointer; border: 1px solid var(--border); background: none;
+  color: var(--text-muted); transition: all 0.2s; font-family: var(--font-body);
+}
+.cohort-tab.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+/* ALERT SYSTEM */
+.alert-list { display: flex; flex-direction: column; gap: 10px; }
+.alert-item {
+  display: flex; align-items: flex-start; gap: 14px;
+  background: var(--surface2); border-radius: 10px; padding: 14px;
+  border-left: 3px solid;
+  transition: transform 0.15s;
+}
+.alert-item:hover { transform: translateX(4px); }
+.alert-item.critical { border-color: var(--accent3); }
+.alert-item.warning { border-color: var(--accent4); }
+.alert-item.info { border-color: var(--accent); }
+.alert-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+.alert-content { flex: 1; }
+.alert-title { font-weight: 600; font-size: 13px; margin-bottom: 2px; }
+.alert-desc { font-size: 11px; color: var(--text-muted); }
+.alert-time { font-family: var(--font-mono); font-size: 10px; color: var(--text-dim); flex-shrink: 0; }
+
+/* SYSTEM FLOW VISUAL */
+.flow-visual {
+  display: flex; flex-direction: column; gap: 0;
+}
+.flow-row {
+  display: flex; align-items: stretch; gap: 0;
+}
+.flow-box {
+  flex: 1; background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 10px; padding: 14px; margin: 4px; position: relative;
+  transition: all 0.2s; cursor: default;
+}
+.flow-box:hover { border-color: var(--accent); background: rgba(45,127,255,0.06); }
+.flow-box-icon { font-size: 20px; margin-bottom: 6px; }
+.flow-box-title { font-weight: 700; font-size: 12px; margin-bottom: 3px; }
+.flow-box-desc { font-size: 10px; color: var(--text-muted); }
+.flow-connector {
+  display: flex; align-items: center; justify-content: center;
+  padding: 4px 0; color: var(--text-dim); font-size: 18px;
+}
+.flow-connector-h {
+  display: flex; align-items: center; color: var(--text-dim); font-size: 16px;
+  padding: 0 2px; align-self: center;
+}
+
+/* RADAR / CHARTS */
+.radar-container { display: flex; justify-content: center; padding: 10px 0; }
+svg.radar { overflow: visible; }
+.radar-bg-poly { fill: rgba(45,127,255,0.04); stroke: rgba(45,127,255,0.15); stroke-width: 1; }
+.radar-axis { stroke: rgba(45,127,255,0.15); stroke-width: 1; }
+.radar-market { fill: rgba(255,107,107,0.2); stroke: var(--accent3); stroke-width: 2; }
+.radar-syllabus { fill: rgba(45,127,255,0.15); stroke: var(--accent); stroke-width: 2; }
+.radar-label { font-family: var(--font-body); font-size: 10px; fill: var(--text-muted); }
+.radar-legend { display: flex; gap: 20px; justify-content: center; margin-top: 12px; }
+.radar-legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text-muted); }
+.radar-legend-dot { width: 10px; height: 10px; border-radius: 2px; }
+
+/* PILOT STUDENTS */
+.student-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+.student-card {
+  background: var(--surface2); border-radius: 10px; padding: 12px; text-align: center;
+  border: 1px solid var(--border); transition: all 0.2s; cursor: pointer;
+}
+.student-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+.student-avatar {
+  width: 36px; height: 36px; border-radius: 50%; margin: 0 auto 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 700;
+}
+.student-name { font-size: 11px; font-weight: 600; margin-bottom: 2px; }
+.student-type { font-size: 9px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; }
+.student-progress { height: 3px; background: rgba(255,255,255,0.06); border-radius: 2px; overflow: hidden; }
+.student-prog-fill { height: 100%; border-radius: 2px; background: linear-gradient(90deg, var(--accent), var(--accent2)); }
+
+/* ANIMATED NUMBER */
+.animated-num { transition: all 0.3s; }
+
+/* RESPONSIVE ADJUSTMENTS */
+@media (max-width: 900px) {
+  .stats-grid { grid-template-columns: repeat(2,1fr); }
+  .module-grid { grid-template-columns: repeat(2,1fr); }
+  .grid-2, .grid-65-35, .grid-35-65 { grid-template-columns: 1fr; }
+  .student-grid { grid-template-columns: repeat(4,1fr); }
+}
+
+/* SCROLLING TICKER */
+.ticker-wrapper {
+  overflow: hidden; background: rgba(45,127,255,0.06);
+  border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+  padding: 8px 0; margin-bottom: 24px;
+}
+.ticker-content {
+  display: flex; gap: 40px; white-space: nowrap;
+  animation: ticker 25s linear infinite;
+}
+.ticker-item { font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); }
+.ticker-item span { color: var(--accent2); margin-right: 6px; }
+@keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+/* TOOLTIP */
+.tooltip {
+  position: absolute; background: #1a2640; border: 1px solid var(--border);
+  border-radius: 8px; padding: 8px 12px; font-size: 11px;
+  pointer-events: none; z-index: 1000;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+  max-width: 180px;
+  display: none;
+}
+
+/* SEPARATOR */
+.sep { height: 1px; background: var(--border); margin: 24px 0; }
+
+/* LOADING ANIMATION */
+.scanning-anim {
+  display: flex; align-items: center; gap: 10px;
+  background: rgba(0,229,176,0.06); border: 1px solid rgba(0,229,176,0.2);
+  border-radius: 10px; padding: 10px 16px; margin-bottom: 16px;
+  font-size: 12px; color: var(--accent2);
+}
+.scan-wave {
+  width: 60px; height: 16px; position: relative; display: flex; align-items: center; gap: 3px;
+}
+.scan-wave span {
+  display: inline-block; width: 3px; background: var(--accent2); border-radius: 2px;
+  animation: wave 1s ease-in-out infinite;
+}
+.scan-wave span:nth-child(1) { height: 4px; animation-delay: 0s; }
+.scan-wave span:nth-child(2) { height: 12px; animation-delay: 0.15s; }
+.scan-wave span:nth-child(3) { height: 8px; animation-delay: 0.3s; }
+.scan-wave span:nth-child(4) { height: 16px; animation-delay: 0.45s; }
+.scan-wave span:nth-child(5) { height: 6px; animation-delay: 0.6s; }
+@keyframes wave {
+  0%,100% { transform: scaleY(0.4); opacity: 0.5; }
+  50% { transform: scaleY(1); opacity: 1; }
+}
+
+.close-btn {
+  width: 32px; height: 32px; border-radius: 8px; background: var(--surface2);
+  border: 1px solid var(--border); color: var(--text-muted); font-size: 16px;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s;
+}
+.close-btn:hover { background: rgba(255,107,107,0.15); color: var(--accent3); border-color: var(--accent3); }
+
+/* THRESHOLD INDICATOR */
+.threshold-line {
+  display: flex; align-items: center; gap: 10px; margin-top: 12px;
+  font-size: 11px; color: var(--text-muted);
+}
+.threshold-marker { width: 20px; height: 2px; background: var(--accent3); border-radius: 1px; }
+.threshold-marker.green { background: var(--accent2); }
+
+/* OVERVIEW BANNER */
+.overview-banner {
+  background: linear-gradient(135deg, rgba(45,127,255,0.1), rgba(0,229,176,0.06));
+  border: 1px solid rgba(45,127,255,0.2);
+  border-radius: 16px; padding: 28px 32px;
+  margin-bottom: 28px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.banner-text h2 { font-family: var(--font-display); font-size: 20px; font-weight: 800; margin-bottom: 6px; }
+.banner-text p { color: var(--text-muted); font-size: 13px; max-width: 500px; }
+.banner-stats { display: flex; gap: 32px; }
+.banner-stat { text-align: center; }
+.banner-stat .bsv { font-family: var(--font-display); font-size: 28px; font-weight: 800; color: var(--accent2); }
+.banner-stat .bsl { font-size: 11px; color: var(--text-muted); }
+
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-brand">
+    <div class="nav-logo">V</div>
+    <div>
+      <div class="nav-title">VAIL · Adaptive Syllabus</div>
+      <div class="nav-subtitle">Marketing Pilot — IEDE 2026</div>
+    </div>
+  </div>
+  <div class="nav-links">
+    <button class="nav-link active" onclick="showSection('overview')">Overview</button>
+    <button class="nav-link" onclick="showSection('gap')">Skill Gap Analysis</button>
+    <button class="nav-link" onclick="showSection('pipeline')">System Pipeline</button>
+    <button class="nav-link" onclick="showSection('modules')">Adaptive Modules</button>
+    <button class="nav-link" onclick="showSection('pilot')">Pilot Cohort</button>
+  </div>
+  <div class="nav-badge">LIVE DEMO</div>
+</nav>
+
+<!-- TICKER -->
+<div style="padding-top:60px;">
+  <div class="ticker-wrapper">
+    <div class="ticker-content">
+      <div class="ticker-item"><span>●</span>AI Marketing Strategist — 10,247 JDs scanned today</div>
+      <div class="ticker-item"><span>▲</span>Generative AI skill demand +34% vs Q1 2026</div>
+      <div class="ticker-item"><span>●</span>Similarity Index: UEH Marketing = 0.47 · Below threshold</div>
+      <div class="ticker-item"><span>▲</span>Module "AI Content Strategy" auto-triggered — 3 min ago</div>
+      <div class="ticker-item"><span>●</span>35 missing skills identified · 8 skill clusters grouped</div>
+      <div class="ticker-item"><span>▲</span>Pilot cohort: 18 students · Urban: 9 · Rural: 9</div>
+      <div class="ticker-item"><span>●</span>AI Marketing Strategist — 10,247 JDs scanned today</div>
+      <div class="ticker-item"><span>▲</span>Generative AI skill demand +34% vs Q1 2026</div>
+      <div class="ticker-item"><span>●</span>Similarity Index: UEH Marketing = 0.47 · Below threshold</div>
+      <div class="ticker-item"><span>▲</span>Module "AI Content Strategy" auto-triggered — 3 min ago</div>
+      <div class="ticker-item"><span>●</span>35 missing skills identified · 8 skill clusters grouped</div>
+      <div class="ticker-item"><span>▲</span>Pilot cohort: 18 students · Urban: 9 · Rural: 9</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ SECTION 1: OVERVIEW ═══════════════════════════ -->
+<section id="overview" class="section active">
+  <div class="container">
+    <div class="page-header">
+      <div class="eyebrow">IEDE 2026 · VAIL-OEH Ecosystem</div>
+      <h1>Adaptive Syllabus Dashboard</h1>
+      <p>Real-time AI skill gap intelligence for Vietnamese Marketing programs — powered by NLP-driven JD scanning & automated module deployment</p>
+      <div style="margin-top:14px; display:flex; gap:10px; align-items:center;">
+        <div class="live-badge"><div class="live-dot"></div>SYSTEM LIVE</div>
+        <div class="live-badge" style="background:rgba(45,127,255,0.1); border-color:rgba(45,127,255,0.3); color:var(--accent);">📍 Marketing Pilot · UEH · 2026</div>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card blue">
+        <div class="stat-label">JDs Scanned (Today)</div>
+        <div class="stat-value blue">10,247</div>
+        <div class="stat-sub">↑ 12% vs yesterday</div>
+      </div>
+      <div class="stat-card red">
+        <div class="stat-label">Missing AI Skills</div>
+        <div class="stat-value red">35</div>
+        <div class="stat-sub">Grouped into 8 clusters</div>
+      </div>
+      <div class="stat-card yellow">
+        <div class="stat-label">Avg Similarity Index</div>
+        <div class="stat-value yellow">0.47</div>
+        <div class="stat-sub">Threshold: 0.60 · ⚠ Below</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-label">Modules Auto-Deployed</div>
+        <div class="stat-value green">4</div>
+        <div class="stat-sub">3 in progress · 1 live</div>
+      </div>
+    </div>
+
+    <div class="overview-banner">
+      <div class="banner-text">
+        <h2>🎯 Marketing Program · Skill Alignment Crisis Detected</h2>
+        <p>NLP analysis of 10,247 marketing JDs reveals a critical misalignment between current UEH Marketing syllabus and 2026 industry demands. The Adaptive Syllabus has automatically triggered 4 micro-learning modules to patch the most critical skill gaps.</p>
+      </div>
+      <div class="banner-stats">
+        <div class="banner-stat">
+          <div class="bsv">47%</div>
+          <div class="bsl">Matched Skills</div>
+        </div>
+        <div class="banner-stat">
+          <div class="bsv" style="color:var(--accent3);">53%</div>
+          <div class="bsl">Gap Skills</div>
+        </div>
+        <div class="banner-stat">
+          <div class="bsv" style="color:var(--accent4);">18</div>
+          <div class="bsl">Pilot Students</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-65-35">
+      <!-- RADAR CHART -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><div class="card-icon" style="background:rgba(45,127,255,0.15);">📡</div>Industry Demand vs. Syllabus Coverage</div>
+          <div class="card-tag tag-blue">RADAR ANALYSIS</div>
+        </div>
+        <div class="radar-container">
+          <svg class="radar" width="380" height="300" viewBox="0 0 380 300">
+            <g transform="translate(190,155)">
+              <!-- BG polygons -->
+              <polygon class="radar-bg-poly" points="0,-120 103.9,-60 103.9,60 0,120 -103.9,60 -103.9,-60"/>
+              <polygon class="radar-bg-poly" points="0,-80 69.3,-40 69.3,40 0,80 -69.3,40 -69.3,-40"/>
+              <polygon class="radar-bg-poly" points="0,-40 34.6,-20 34.6,20 0,40 -34.6,20 -34.6,-20"/>
+              <!-- Axis lines -->
+              <line class="radar-axis" x1="0" y1="0" x2="0" y2="-120"/>
+              <line class="radar-axis" x1="0" y1="0" x2="103.9" y2="-60"/>
+              <line class="radar-axis" x1="0" y1="0" x2="103.9" y2="60"/>
+              <line class="radar-axis" x1="0" y1="0" x2="0" y2="120"/>
+              <line class="radar-axis" x1="0" y1="0" x2="-103.9" y2="60"/>
+              <line class="radar-axis" x1="0" y1="0" x2="-103.9" y2="-60"/>
+              <!-- Market demand polygon -->
+              <polygon class="radar-market" points="0,-108 97,-49 91,51 0,100 -90,54 -88,-62"/>
+              <!-- Syllabus polygon -->
+              <polygon class="radar-syllabus" points="0,-62 56,-31 60,29 0,55 -48,31 -52,-38"/>
+              <!-- Labels -->
+              <text class="radar-label" x="0" y="-128" text-anchor="middle">AI Content & Writing</text>
+              <text class="radar-label" x="112" y="-64" text-anchor="start">AI Integration</text>
+              <text class="radar-label" x="112" y="68" text-anchor="start">AI Analytics</text>
+              <text class="radar-label" x="0" y="136" text-anchor="middle">AI Marketing</text>
+              <text class="radar-label" x="-112" y="68" text-anchor="end">Prompt Eng.</text>
+              <text class="radar-label" x="-112" y="-64" text-anchor="end">Multimedia AI</text>
+            </g>
+          </svg>
+        </div>
+        <div class="radar-legend">
+          <div class="radar-legend-item">
+            <div class="radar-legend-dot" style="background:rgba(255,107,107,0.6); border:2px solid var(--accent3);"></div>
+            Industry Demand (JD Market)
+          </div>
+          <div class="radar-legend-item">
+            <div class="radar-legend-dot" style="background:rgba(45,127,255,0.3); border:2px solid var(--accent);"></div>
+            UEH Syllabus Coverage
+          </div>
+        </div>
+      </div>
+
+      <!-- ALERT SYSTEM -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><div class="card-icon" style="background:rgba(255,107,107,0.15);">🔔</div>Auto-Alerts</div>
+          <div class="card-tag tag-red">3 CRITICAL</div>
+        </div>
+        <div class="alert-list">
+          <div class="alert-item critical">
+            <div class="alert-icon">🚨</div>
+            <div class="alert-content">
+              <div class="alert-title">Generative AI — 100% Market Gap</div>
+              <div class="alert-desc">Not found in any syllabus. Module auto-queued.</div>
+            </div>
+            <div class="alert-time">2m ago</div>
+          </div>
+          <div class="alert-item critical">
+            <div class="alert-icon">🚨</div>
+            <div class="alert-content">
+              <div class="alert-title">AI Data Analytics — Similarity 0.41</div>
+              <div class="alert-desc">Far below 0.60 threshold. Critical patch needed.</div>
+            </div>
+            <div class="alert-time">5m ago</div>
+          </div>
+          <div class="alert-item warning">
+            <div class="alert-icon">⚠️</div>
+            <div class="alert-content">
+              <div class="alert-title">AI Marketing & Strategy — 0.57</div>
+              <div class="alert-desc">Borderline. Enhancement module suggested.</div>
+            </div>
+            <div class="alert-time">12m ago</div>
+          </div>
+          <div class="alert-item warning">
+            <div class="alert-icon">⚠️</div>
+            <div class="alert-content">
+              <div class="alert-title">Prompt Engineering — 0.42 avg</div>
+              <div class="alert-desc">Below threshold across 4/6 universities.</div>
+            </div>
+            <div class="alert-time">18m ago</div>
+          </div>
+          <div class="alert-item info">
+            <div class="alert-icon">ℹ️</div>
+            <div class="alert-content">
+              <div class="alert-title">Module 1 Deployed Successfully</div>
+              <div class="alert-desc">"Generative AI for Marketers" now live.</div>
+            </div>
+            <div class="alert-time">1h ago</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SYSTEM OVERVIEW FLOW -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title"><div class="card-icon" style="background:rgba(0,229,176,0.15);">⚙️</div>How the Adaptive Syllabus Works</div>
+        <div class="card-tag tag-green">AUTOMATED LOOP</div>
+      </div>
+      <div class="pipeline">
+        <div class="pipe-step">
+          <div class="pipe-node pipe-node-1">🔍</div>
+          <div class="pipe-step-label">Market Scanning</div>
+          <div class="pipe-step-sub">Octoparse scrapes 10K+ JDs daily from VietnamWorks & LinkedIn</div>
+        </div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-step">
+          <div class="pipe-node pipe-node-2">🧠</div>
+          <div class="pipe-step-label">NLP Processing</div>
+          <div class="pipe-step-sub">Python cosine similarity compares JD vectors vs. syllabus</div>
+        </div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-step">
+          <div class="pipe-node pipe-node-3">📊</div>
+          <div class="pipe-step-label">Gap Detection</div>
+          <div class="pipe-step-sub">Heatmap generated · 35 skills identified · 8 clusters grouped</div>
+        </div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-step">
+          <div class="pipe-node pipe-node-4">🎯</div>
+          <div class="pipe-step-label">Module Trigger</div>
+          <div class="pipe-step-sub">If similarity &lt; 0.60, micro-learning patch auto-deployed</div>
+        </div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-step">
+          <div class="pipe-node pipe-node-5">📚</div>
+          <div class="pipe-step-label">Student Learning</div>
+          <div class="pipe-step-sub">Video + Summary + Pre/Post Test delivered to 18 students</div>
+        </div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-step">
+          <div class="pipe-node pipe-node-6">📈</div>
+          <div class="pipe-step-label">Impact Measured</div>
+          <div class="pipe-step-sub">Improvement % tracked · Urban vs Rural cohort compared</div>
+        </div>
+      </div>
+      <div class="threshold-line">
+        <div class="threshold-marker"></div>
+        Trigger threshold: Similarity Index &lt; 0.60 → Module auto-deployed
+        &nbsp;&nbsp;
+        <div class="threshold-marker green"></div>
+        Target: Similarity Index ≥ 0.60 → Syllabus aligned
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════ SECTION 2: SKILL GAP ═══════════════════════════ -->
+<section id="gap" class="section">
+  <div class="container">
+    <div class="page-header">
+      <div class="eyebrow">Phase 1 · NLP Gap Analysis</div>
+      <h1>Skill Gap Heatmap</h1>
+      <p>Cosine similarity scores between 2026 Marketing JD requirements and university syllabi. Data from actual scraping of VietnamWorks/LinkedIn vs. UEH, TMU, UEL, NEU, FTU, HUB syllabi.</p>
+    </div>
+
+    <div class="scanning-anim">
+      <div class="scan-wave"><span></span><span></span><span></span><span></span><span></span></div>
+      <span>Live scan running · Last update: <strong>2 minutes ago</strong> · 10,247 JDs processed · Next scan in <strong>58 minutes</strong></span>
+    </div>
+
+    <div class="grid-65-35">
+      <!-- HEATMAP -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><div class="card-icon" style="background:rgba(255,107,107,0.15);">🗺️</div>Similarity Score Heatmap — 2026</div>
+          <div class="card-tag tag-red">35 GAPS FOUND</div>
+        </div>
+        <div class="heatmap-wrapper">
+          <table class="heatmap-table" id="heatmapTable">
+            <thead>
+              <tr>
+                <th class="skill-col">AI Skill Cluster</th>
+                <th>UEH</th><th>TMU</th><th>UEL</th><th>NEU</th><th>FTU</th><th>HUB</th>
+              </tr>
+            </thead>
+            <tbody id="heatmapBody"></tbody>
+          </table>
+        </div>
+        <div style="margin-top:14px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+          <span style="font-size:11px; color:var(--text-muted);">Score legend:</span>
+          <span style="background:rgba(61,169,255,0.5);color:#fff;font-size:10px;padding:2px 8px;border-radius:4px;">0.20–0.39 Critical</span>
+          <span style="background:rgba(255,140,66,0.55);color:#fff;font-size:10px;padding:2px 8px;border-radius:4px;">0.40–0.49 Low</span>
+          <span style="background:rgba(255,107,107,0.65);color:#fff;font-size:10px;padding:2px 8px;border-radius:4px;">0.50–0.55 Moderate</span>
+          <span style="background:rgba(220,30,30,0.75);color:#fff;font-size:10px;padding:2px 8px;border-radius:4px;">0.56–0.62 Acceptable</span>
+          <span style="background:rgba(180,0,0,0.85);color:#fff;font-size:10px;padding:2px 8px;border-radius:4px;">0.63–0.70 Aligned</span>
+        </div>
+        <div class="threshold-line" style="margin-top:10px;">
+          <div class="threshold-marker"></div>
+          Values below 0.60 trigger automatic module deployment
+        </div>
+      </div>
+
+      <!-- GAP BREAKDOWN -->
+      <div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Top Missing Skills</div>
+            <div class="card-tag tag-red">PRIORITY</div>
+          </div>
+          <div id="gapBars"></div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">8 Skill Clusters</div>
+            <div class="card-tag tag-yellow">GROUPED</div>
+          </div>
+          <div id="clusterList"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SKILL 35 LIST -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title"><div class="card-icon" style="background:rgba(255,192,77,0.15);">📋</div>All 35 Identified Missing Skills</div>
+        <div class="card-tag tag-yellow">FULL LIST</div>
+      </div>
+      <div id="skill35Grid" style="display:grid; grid-template-columns:repeat(4,1fr); gap:8px;"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════ SECTION 3: PIPELINE ═══════════════════════════ -->
+<section id="pipeline" class="section">
+  <div class="container">
+    <div class="page-header">
+      <div class="eyebrow">System Architecture</div>
+      <h1>Adaptive Syllabus Pipeline</h1>
+      <p>The fully automated engine: from real-time JD scraping to module deployment and student outcome measurement. This is the operational logic underpinning the VAIL-OEH Ecosystem.</p>
+    </div>
+
+    <!-- DETAILED FLOW -->
+    <div class="card" style="margin-bottom:24px;">
+      <div class="card-header">
+        <div class="card-title">🔄 Autonomous Operating Engine — 6-Stage Cycle</div>
+        <div class="live-badge"><div class="live-dot"></div>RUNNING</div>
+      </div>
+
+      <div class="flow-visual">
+        <div class="flow-row">
+          <div class="flow-box">
+            <div class="flow-box-icon">🌐</div>
+            <div class="flow-box-title">Stage 1 · Market Data Scanning</div>
+            <div class="flow-box-desc">Octoparse continuously collects 10,000+ JDs/day from VietnamWorks, LinkedIn, TopCV. Keywords: "marketing", "digital", "AI". Extracts: required skills, tools, qualifications.</div>
+          </div>
+          <div class="flow-connector-h">→</div>
+          <div class="flow-box">
+            <div class="flow-box-icon">🧮</div>
+            <div class="flow-box-title">Stage 2 · NLP Vectorization</div>
+            <div class="flow-box-desc">Python NLTK/spaCy tokenizes JD text. TF-IDF vectors built for each skill mention. Cosine similarity computed against syllabus document vectors. Output: similarity matrix.</div>
+          </div>
+          <div class="flow-connector-h">→</div>
+          <div class="flow-box">
+            <div class="flow-box-icon">📊</div>
+            <div class="flow-box-title">Stage 3 · Gap Detection & Heatmap</div>
+            <div class="flow-box-desc">Similarity index calculated per skill cluster × university. 35 missing skills identified, grouped into 8 clusters. Heatmap auto-generated. Scores below 0.60 flagged.</div>
+          </div>
+        </div>
+        <div class="flow-connector" style="margin:4px 0; font-size:22px; color:var(--text-dim);">↓</div>
+        <div class="flow-row">
+          <div class="flow-box" style="border-color:rgba(0,229,176,0.3);">
+            <div class="flow-box-icon">📈</div>
+            <div class="flow-box-title">Stage 6 · Impact Measurement</div>
+            <div class="flow-box-desc">Pre/Post test scores compared. Improvement % calculated per student. Urban vs rural cohort analysis via MGA. Survey tracks self-reported skill confidence. Dashboard updated in real-time.</div>
+          </div>
+          <div class="flow-connector-h">←</div>
+          <div class="flow-box" style="border-color:rgba(0,229,176,0.3);">
+            <div class="flow-box-icon">🎓</div>
+            <div class="flow-box-title">Stage 5 · Student Learning</div>
+            <div class="flow-box-desc">18 pilot students (9 urban, 9 rural) access module. Pre-test → 15-min AI-narrated video → Knowledge summary → Post-test → Survey. All tracked anonymously.</div>
+          </div>
+          <div class="flow-connector-h">←</div>
+          <div class="flow-box" style="border-color:rgba(0,229,176,0.3);">
+            <div class="flow-box-icon">🚀</div>
+            <div class="flow-box-title">Stage 4 · Module Auto-Deployment</div>
+            <div class="flow-box-desc">AI Curriculum Co-Pilot drafts micro-learning content based on flagged skill gaps. Module pushed to faculty every Monday. Students notified. Content: video + summary + quiz + survey.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <!-- MODULE TRIGGER LOGIC -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">🎯 Module Trigger Logic</div>
+          <div class="card-tag tag-blue">THRESHOLD</div>
+        </div>
+        <div style="background:var(--surface2); border-radius:12px; padding:20px; font-family:var(--font-mono); font-size:12px; color:var(--accent2);">
+          <div style="color:var(--text-dim);">// Adaptive Syllabus Trigger Algorithm</div>
+          <br>
+          <div style="color:var(--accent4);">for each</div> skill_cluster <div style="display:inline;color:var(--accent4);">in</div> gap_analysis:
+          <div style="padding-left:16px; color:var(--text-muted);">similarity = cosine_sim(JD_vector, syllabus_vector)</div>
+          <br>
+          <div style="padding-left:16px;"><div style="display:inline;color:var(--accent4);">if</div> similarity &lt; <div style="display:inline;color:var(--accent3);">0.60</div>:</div>
+          <div style="padding-left:32px; color:var(--accent2);">alert.trigger(level="CRITICAL")</div>
+          <div style="padding-left:32px; color:var(--accent2);">module.deploy(skill_cluster)</div>
+          <div style="padding-left:32px; color:var(--accent2);">faculty.notify(monday_update)</div>
+          <br>
+          <div style="padding-left:16px;"><div style="display:inline;color:var(--accent4);">elif</div> similarity &lt; <div style="display:inline;color:var(--accent4);">0.70</div>:</div>
+          <div style="padding-left:32px; color:var(--accent4);">alert.trigger(level="WARNING")</div>
+          <div style="padding-left:32px; color:var(--accent4);">module.queue(skill_cluster)</div>
+          <br>
+          <div><div style="display:inline;color:var(--accent4);">else</div>: syllabus.status = <div style="display:inline;color:var(--accent2);">"ALIGNED" ✓</div></div>
+        </div>
+      </div>
+
+      <!-- TIMELINE -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">📅 Pilot Timeline</div>
+          <div class="card-tag tag-green">2026</div>
+        </div>
+        <div id="timeline"></div>
+      </div>
+    </div>
+
+    <!-- STATIC vs DYNAMIC TABLE -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">⚡ Static Administration → Dynamic Operations</div>
+        <div class="card-tag tag-blue">TRANSFORMATION</div>
+      </div>
+      <table style="width:100%; border-collapse:collapse;">
+        <thead>
+          <tr>
+            <th style="text-align:left;padding:10px 14px;border-bottom:1px solid var(--border);font-size:12px;color:var(--text-muted);">Dimension</th>
+            <th style="text-align:left;padding:10px 14px;border-bottom:1px solid var(--border);font-size:12px;color:var(--accent3);">Static (Current)</th>
+            <th style="text-align:left;padding:10px 14px;border-bottom:1px solid var(--border);font-size:12px;color:var(--accent2);">Dynamic (VAIL System)</th>
+          </tr>
+        </thead>
+        <tbody id="comparisonTable"></tbody>
+      </table>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════ SECTION 4: MODULES ═══════════════════════════ -->
+<section id="modules" class="section">
+  <div class="container">
+    <div class="page-header">
+      <div class="eyebrow">Adaptive Micro-Learning</div>
+      <h1>Auto-Deployed Modules</h1>
+      <p>AI-generated micro-learning patches targeting the 8 identified skill gaps in Marketing programs. Each module includes: AI-narrated video · Knowledge summary · Pre/Post quiz · Impact survey.</p>
+    </div>
+
+    <div class="module-grid" id="moduleGrid"></div>
+
+    <!-- MODULE DETAIL -->
+    <div id="module-detail">
+      <div class="module-detail-container" id="moduleDetailBox"></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════ SECTION 5: PILOT ═══════════════════════════ -->
+<section id="pilot" class="section">
+  <div class="container">
+    <div class="page-header">
+      <div class="eyebrow">Empirical Validation</div>
+      <h1>Pilot Cohort — 18 Students</h1>
+      <p>Marketing students from UEH: 9 urban (Ho Chi Minh City) + 9 rural (Bình Phước, Đắk Lắk, Cần Thơ). Pre/post module testing to measure AI skill improvement and digital equity impact.</p>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card green">
+        <div class="stat-label">Avg Pre-Test Score</div>
+        <div class="stat-value red">38%</div>
+        <div class="stat-sub">Before module learning</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-label">Avg Post-Test Score</div>
+        <div class="stat-value green">74%</div>
+        <div class="stat-sub">After module learning</div>
+      </div>
+      <div class="stat-card blue">
+        <div class="stat-label">Avg Improvement</div>
+        <div class="stat-value blue">+36pp</div>
+        <div class="stat-sub">+94% relative gain</div>
+      </div>
+      <div class="stat-card yellow">
+        <div class="stat-label">Urban vs Rural Gap</div>
+        <div class="stat-value yellow">-8pp</div>
+        <div class="stat-sub">Rural catch-up effect observed</div>
+      </div>
+    </div>
+
+    <div class="grid-2" style="margin-bottom:20px;">
+      <!-- STUDENT GRID -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">👥 Pilot Students</div>
+          <div style="display:flex; gap:8px;">
+            <div class="card-tag tag-blue">9 URBAN</div>
+            <div class="card-tag tag-green">9 RURAL</div>
+          </div>
+        </div>
+        <div class="student-grid" id="studentGrid"></div>
+      </div>
+
+      <!-- IMPROVEMENT CHART -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">📊 Pre vs Post Score Comparison</div>
+          <div class="cohort-tabs">
+            <button class="cohort-tab active" onclick="switchCohort('all', this)">All</button>
+            <button class="cohort-tab" onclick="switchCohort('urban', this)">Urban</button>
+            <button class="cohort-tab" onclick="switchCohort('rural', this)">Rural</button>
+          </div>
+        </div>
+        <div id="improvementChart"></div>
+      </div>
+    </div>
+
+    <!-- DETAILED RESULTS -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">📋 Results by Module & Cohort</div>
+        <div class="card-tag tag-green">POST-TEST DATA</div>
+      </div>
+      <table style="width:100%; border-collapse:collapse;" id="resultsTable">
+        <thead>
+          <tr>
+            <th style="text-align:left;padding:10px 14px;border-bottom:1px solid var(--border);font-size:11px;color:var(--text-muted);">Module</th>
+            <th style="text-align:center;padding:10px 14px;border-bottom:1px solid var(--border);font-size:11px;color:var(--text-muted);">Pre-Test (Avg)</th>
+            <th style="text-align:center;padding:10px 14px;border-bottom:1px solid var(--border);font-size:11px;color:var(--text-muted);">Post-Test (Avg)</th>
+            <th style="text-align:center;padding:10px 14px;border-bottom:1px solid var(--border);font-size:11px;color:var(--text-muted);">Urban</th>
+            <th style="text-align:center;padding:10px 14px;border-bottom:1px solid var(--border);font-size:11px;color:var(--text-muted);">Rural</th>
+            <th style="text-align:center;padding:10px 14px;border-bottom:1px solid var(--border);font-size:11px;color:var(--text-muted);">Improvement</th>
+            <th style="text-align:center;padding:10px 14px;border-bottom:1px solid var(--border);font-size:11px;color:var(--text-muted);">Status</th>
+          </tr>
+        </thead>
+        <tbody id="resultsBody"></tbody>
+      </table>
+    </div>
+
+    <!-- SURVEY INSIGHTS -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">🗣️ Student Survey Insights</div>
+        <div class="card-tag tag-green">N=18</div>
+      </div>
+      <div id="surveyInsights"></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- TOOLTIP -->
+<div class="tooltip" id="tooltip"></div>
+
+<script>
+// ─────────────────────────── DATA ───────────────────────────
+
+const heatmapData = [
+  { skill: "AI Content & Writing",        scores: [0.53, 0.56, 0.38, 0.61, 0.50, 0.34] },
+  { skill: "AI Integration & Automation", scores: [0.56, 0.35, 0.30, 0.37, 0.59, 0.22] },
+  { skill: "Prompt Engineering",          scores: [0.46, 0.42, 0.41, 0.44, 0.45, 0.37] },
+  { skill: "AI Customer Support & CRM",   scores: [0.53, 0.43, 0.47, 0.48, 0.50, 0.29] },
+  { skill: "AI Data Analytics",           scores: [0.68, 0.56, 0.54, 0.55, 0.59, 0.41] },
+  { skill: "AI Marketing & Strategy",     scores: [0.58, 0.55, 0.57, 0.59, 0.57, 0.57] },
+  { skill: "AI Multimedia & Creative",    scores: [0.64, 0.54, 0.59, 0.63, 0.52, 0.36] },
+  { skill: "AI Product Development",      scores: [0.58, 0.45, 0.41, 0.45, 0.53, 0.37] },
+];
+
+const universities = ["UEH", "TMU", "UEL", "NEU", "FTU", "HUB"];
+
+const skill35 = [
+  "Generative AI for Marketing","AI Copywriting","ChatGPT Prompt Design",
+  "Midjourney / DALL-E","AI SEO Optimization","AI Email Automation",
+  "Marketing Analytics w/ AI","Consumer Behavior AI Modeling","AI CRM Integration",
+  "Sentiment Analysis Tools","AI Social Media Strategy","Automated Ad Targeting",
+  "AI Market Research","Programmatic Advertising AI","AI Video Content Creation",
+  "AI Influencer Analytics","Predictive Analytics","AI Brand Strategy",
+  "NLP for Customer Insights","AI Competitive Intelligence","Chatbot Marketing",
+  "AI A/B Testing","Personalization Algorithms","AI Product Pricing",
+  "AI Campaign Management","AI UX Research","Automated Reporting",
+  "AI Lead Scoring","AI Funnel Optimization","AI Trend Forecasting",
+  "LLM API Integration","AI Customer Segmentation","AI Content Calendar",
+  "Ethical AI in Marketing","AI Budget Optimization"
+];
+
+const clusters = [
+  { name: "Generative AI & LLMs", count: 6, gap: "100%", color: "#ff4545" },
+  { name: "AI Data Analytics", count: 5, gap: "78%", color: "#ff8c42" },
+  { name: "AI Content Creation", count: 5, gap: "72%", color: "#ff8c42" },
+  { name: "Marketing Automation", count: 5, gap: "68%", color: "#ffc04d" },
+  { name: "AI Strategy & Planning", count: 5, gap: "64%", color: "#ffc04d" },
+  { name: "Customer AI Tools", count: 5, gap: "58%", color: "#3da9ff" },
+  { name: "AI Multimedia", count: 5, gap: "52%", color: "#3da9ff" },
+  { name: "AI Product & Research", count: 5, gap: "47%", color: "#00e5b0" },
+];
+
+const modules = [
+  {
+    id: 0, emoji: "🤖", title: "Generative AI for Marketers",
+    skill: "AI Content & Writing", duration: "18 min", questions: 5,
+    status: "live", statusLabel: "LIVE",
+    color: "linear-gradient(135deg, #1a3560, #2d60c0)",
+    videoTitle: "Introduction to Generative AI in Marketing Workflows",
+    videoDesc: "Learn how LLMs like ChatGPT, Claude, and Gemini are transforming marketing content creation, campaign ideation, and customer engagement strategies.",
+    keypoints: [
+      { num: "01", title: "What is Generative AI?", desc: "LLMs, prompts, and how they generate human-like marketing content at scale." },
+      { num: "02", title: "AI Copywriting Techniques", desc: "AIDA framework prompts, tone customization, and brand voice preservation using AI." },
+      { num: "03", title: "Campaign Ideation with AI", desc: "Using ChatGPT and Claude to brainstorm 50+ campaign concepts in minutes." },
+      { num: "04", title: "AI Hallucination Risks", desc: "Identifying when AI 'makes up' facts — critical for marketing accuracy and brand trust." },
+    ],
+    quiz: [
+      { q: "What does 'hallucination' mean in the context of Generative AI?", opts: ["AI generating images", "AI producing factually incorrect but confident-sounding text", "A visual processing error", "AI refusing to answer"], ans: 1 },
+      { q: "Which framework is most useful when writing AI prompts for persuasive marketing copy?", opts: ["SWOT Analysis", "AIDA (Attention, Interest, Desire, Action)", "BCG Matrix", "PESTLE Analysis"], ans: 1 },
+      { q: "Claude, ChatGPT, and Gemini are all examples of:", opts: ["Computer vision models", "Large Language Models (LLMs)", "Data analytics platforms", "Social media algorithms"], ans: 1 },
+      { q: "Why is 'prompt engineering' considered a critical marketing skill in 2026?", opts: ["It replaces graphic design entirely", "It helps marketers extract precise, brand-aligned outputs from AI tools", "It is only for developers and engineers", "It eliminates the need for strategy"], ans: 1 },
+      { q: "A marketing student wants to generate 10 email subject lines using AI. The MOST important thing to include in the prompt is:", opts: ["The weather forecast", "Target audience, tone, product benefit, and desired action", "The AI model's version number", "The student's name"], ans: 1 },
+    ],
+  },
+  {
+    id: 1, emoji: "📊", title: "AI Data Analytics for Marketing",
+    skill: "AI Data Analytics", duration: "22 min", questions: 5,
+    status: "live", statusLabel: "LIVE",
+    color: "linear-gradient(135deg, #0d2a2a, #0891b2)",
+    videoTitle: "AI-Powered Marketing Analytics: From Data to Decisions",
+    videoDesc: "Discover how AI tools like Google Analytics 4 AI, HubSpot AI, and Python-based models transform raw marketing data into actionable consumer insights.",
+    keypoints: [
+      { num: "01", title: "Predictive Analytics Basics", desc: "How AI models predict customer churn, LTV, and purchase probability from behavioral data." },
+      { num: "02", title: "GA4 AI Insights", desc: "Using Google Analytics 4's built-in AI features to identify anomalies and opportunities automatically." },
+      { num: "03", title: "NLP for Customer Feedback", desc: "Sentiment analysis tools to process thousands of reviews and social comments in real-time." },
+      { num: "04", title: "AI Segmentation Models", desc: "K-means clustering and AI-based RFM segmentation for ultra-precise audience targeting." },
+    ],
+    quiz: [
+      { q: "Predictive analytics in marketing primarily uses past data to:", opts: ["Create visual reports", "Forecast future customer behavior and outcomes", "Design website layouts", "Write marketing copy"], ans: 1 },
+      { q: "What does 'sentiment analysis' do in marketing?", opts: ["Analyzes image colors", "Determines emotional tone (positive/negative/neutral) in customer text", "Measures website speed", "Tracks email open rates"], ans: 1 },
+      { q: "RFM analysis stands for:", opts: ["Revenue, Frequency, Market", "Recency, Frequency, Monetary Value", "Return, Flow, Management", "Research, Framework, Method"], ans: 1 },
+      { q: "Which Python library is most commonly used for marketing data analysis?", opts: ["Django", "Pandas + Scikit-learn", "Flask", "PyGame"], ans: 1 },
+      { q: "AI anomaly detection in Google Analytics 4 is useful because:", opts: ["It automatically posts social media content", "It immediately flags unusual traffic spikes or drops without manual monitoring", "It writes blog posts", "It designs A/B tests"], ans: 1 },
+    ],
+  },
+  {
+    id: 2, emoji: "✍️", title: "Prompt Engineering for Marketing",
+    skill: "Prompt Engineering", duration: "15 min", questions: 5,
+    status: "wip", statusLabel: "IN PROGRESS",
+    color: "linear-gradient(135deg, #2a1a3e, #7c3aed)",
+    videoTitle: "Mastering Prompt Engineering: The Marketer's Superpower",
+    videoDesc: "Learn the systematic approach to crafting prompts that consistently produce high-quality marketing outputs — from social posts to full campaign briefs.",
+    keypoints: [
+      { num: "01", title: "Prompt Anatomy", desc: "Role, Context, Task, Format — the 4-component framework for professional marketing prompts." },
+      { num: "02", title: "Chain-of-Thought Prompting", desc: "Using step-by-step instructions to guide AI through complex marketing reasoning tasks." },
+      { num: "03", title: "Few-Shot Examples", desc: "Providing 2-3 examples in your prompt to lock AI output style to your brand guidelines." },
+      { num: "04", title: "Prompt Templates Library", desc: "Building a reusable prompt library for common marketing tasks: social posts, ads, briefs, reports." },
+    ],
+    quiz: [
+      { q: "The '4-component prompt framework' for marketing includes Role, Context, Task, and:", opts: ["Revenue", "Format", "Research", "Results"], ans: 1 },
+      { q: "Few-shot prompting means:", opts: ["Asking AI very brief questions", "Providing examples in the prompt to guide output style", "Using AI for quick photo editing", "Testing AI speed"], ans: 1 },
+      { q: "Chain-of-thought prompting is most useful when:", opts: ["You need a one-word answer", "The task requires multi-step reasoning, like developing a full marketing plan", "You want the AI to write poetry", "You are testing API connections"], ans: 1 },
+      { q: "Why should marketers build a 'prompt library'?", opts: ["To store passwords", "To save tested, high-performing prompts for consistent reuse across campaigns", "To archive old campaigns", "To share with competitors"], ans: 1 },
+      { q: "Adding 'You are an expert Vietnamese marketing strategist with 10 years experience' to a prompt is an example of:", opts: ["Task instruction", "Role setting — helps AI adopt the right tone and expertise level", "Format instruction", "Context injection"], ans: 1 },
+    ],
+  },
+  {
+    id: 3, emoji: "🎨", title: "AI Multimedia & Creative Design",
+    skill: "AI Multimedia", duration: "20 min", questions: 5,
+    status: "wip", statusLabel: "IN PROGRESS",
+    color: "linear-gradient(135deg, #2a0d1a, #c2185b)",
+    videoTitle: "AI Creative Tools for Modern Marketing: Midjourney, DALL-E, Runway & Beyond",
+    videoDesc: "Master AI image generation, video creation, and creative asset production that cuts production time by 80% while maintaining professional brand quality.",
+    keypoints: [
+      { num: "01", title: "AI Image Generation", desc: "Midjourney v6 and DALL-E 3 for creating campaign visuals, product mockups, and ad creatives." },
+      { num: "02", title: "AI Video Production", desc: "Runway Gen-3 and Sora for producing short-form video content for social and digital campaigns." },
+      { num: "03", title: "Brand Consistency with AI", desc: "Style reference techniques and brand kit prompting to maintain visual identity across AI outputs." },
+      { num: "04", title: "Legal & Ethical Considerations", desc: "Copyright, model rights, and disclosure requirements when using AI-generated marketing visuals." },
+    ],
+    quiz: [
+      { q: "Midjourney and DALL-E are primarily used to:", opts: ["Analyze marketing data", "Generate high-quality images from text descriptions", "Build websites", "Track campaign performance"], ans: 1 },
+      { q: "When using AI images in commercial marketing, you must be aware of:", opts: ["The AI's electricity consumption", "Copyright status, disclosure requirements, and potential bias in outputs", "The resolution only", "Server maintenance schedules"], ans: 1 },
+      { q: "A 'style reference' in AI image generation helps marketers:", opts: ["Choose fonts", "Maintain consistent visual brand identity across AI-generated images", "Write product descriptions", "Calculate ROI"], ans: 1 },
+      { q: "Runway Gen-3 and Sora are AI tools for:", opts: ["Data analysis", "Video content generation from text or image prompts", "Customer service chatbots", "Email marketing automation"], ans: 1 },
+      { q: "The main business advantage of AI creative tools for a marketing team is:", opts: ["Eliminating the need for any human creativity", "Drastically reducing content production time and cost while scaling output", "Replacing the marketing strategy entirely", "Only useful for large corporations"], ans: 1 },
+    ],
+  },
+];
+
+const students = [
+  {name:"Minh Anh",type:"Urban",pre:42,post:80,avatar:"MA",color:"#2d7fff"},
+  {name:"Thanh Tú",type:"Urban",pre:38,post:76,avatar:"TT",color:"#2d7fff"},
+  {name:"Quốc Bảo",type:"Urban",pre:45,post:82,avatar:"QB",color:"#2d7fff"},
+  {name:"Kim Ngân",type:"Urban",pre:40,post:78,avatar:"KN",color:"#2d7fff"},
+  {name:"Hữu Đức",type:"Urban",pre:50,post:88,avatar:"HĐ",color:"#2d7fff"},
+  {name:"Lan Anh",type:"Urban",pre:36,post:72,avatar:"LA",color:"#2d7fff"},
+  {name:"Việt Hoàng",type:"Urban",pre:44,post:84,avatar:"VH",color:"#2d7fff"},
+  {name:"Mai Phương",type:"Urban",pre:35,post:70,avatar:"MP",color:"#2d7fff"},
+  {name:"Đăng Khoa",type:"Urban",pre:48,post:86,avatar:"ĐK",color:"#2d7fff"},
+  {name:"Tuyết Nhi",type:"Rural",pre:28,post:65,avatar:"TN",color:"#00e5b0"},
+  {name:"Phúc Thịnh",type:"Rural",pre:25,post:62,avatar:"PT",color:"#00e5b0"},
+  {name:"Hồng Nhung",type:"Rural",pre:32,post:68,avatar:"HN",color:"#00e5b0"},
+  {name:"Văn Tâm",type:"Rural",pre:22,post:58,avatar:"VT",color:"#00e5b0"},
+  {name:"Ngọc Hân",type:"Rural",pre:30,post:66,avatar:"NH",color:"#00e5b0"},
+  {name:"Bảo Châu",type:"Rural",pre:27,post:64,avatar:"BC",color:"#00e5b0"},
+  {name:"Tiến Đạt",type:"Rural",pre:35,post:70,avatar:"TĐ",color:"#00e5b0"},
+  {name:"Xuân Mai",type:"Rural",pre:24,post:60,avatar:"XM",color:"#00e5b0"},
+  {name:"Thế Phong",type:"Rural",pre:31,post:67,avatar:"TP",color:"#00e5b0"},
+];
+
+const timeline = [
+  { date: "Jan 2026", event: "JD Scraping Initiated", desc: "10K+ Marketing JDs collected", done: true },
+  { date: "Feb 2026", event: "NLP Analysis Complete", desc: "35 gaps identified, 8 clusters grouped", done: true },
+  { date: "Mar 2026", event: "Modules 1 & 2 Deployed", desc: "Gen AI & Analytics modules live", done: true },
+  { date: "Apr 2026", event: "Pilot Cohort Enrolled", desc: "18 UEH Marketing students onboarded", done: true },
+  { date: "May 2026", event: "Modules 3 & 4 In Progress", desc: "Prompt Eng. & Multimedia in development", current: true },
+  { date: "Jun 2026", event: "Impact Assessment", desc: "Full pre/post analysis & MGA comparison", done: false },
+  { date: "Jul 2026", event: "System Scale-Up", desc: "Expand to 3 more universities", done: false },
+];
+
+const comparisonData = [
+  ["Curriculum Update Cycle", "Every 5 years (Ministry approval)", "Quarterly (automated trigger at <0.60 similarity)"],
+  ["Skill Gap Detection", "Manual faculty review", "Real-time NLP cosine similarity scanning"],
+  ["Market Signal Source", "Industry advisory board (annual)", "10,000+ JDs/day from LinkedIn & VietnamWorks"],
+  ["Module Deployment", "Full semester redesign (months)", "4-6 week micro-patches (auto-generated)"],
+  ["Student Assessment", "End-of-semester exams", "Pre/post test per module (immediate feedback)"],
+  ["Geographic Equity", "Urban-rural gap unmonitored", "Separate urban/rural cohort tracking (MGA)"],
+  ["Faculty Updates", "Annual training workshops", "AI Co-Pilot push every Monday morning"],
+  ["Performance KPI", "Pass/fail rate", "% students achieving VAIL Level 2 Operational"],
+];
+
+// ─────────────────────────── NAVIGATION ───────────────────────────
+
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.nav-link').forEach(l => {
+    if (l.textContent.toLowerCase().includes(id.substring(0,4))) l.classList.add('active');
+  });
+  // Fix nav active for multi-word
+  const navMap = { overview:'Overview', gap:'Skill Gap', pipeline:'System', modules:'Modules', pilot:'Pilot' };
+  document.querySelectorAll('.nav-link').forEach(l => {
+    l.classList.remove('active');
+    if (l.textContent.trim() === navMap[id]) l.classList.add('active');
+  });
+}
+
+// ─────────────────────────── HEATMAP ───────────────────────────
+
+function getHeatClass(v) {
+  if (v >= 0.63) return 'hc-critical';
+  if (v >= 0.56) return 'hc-high';
+  if (v >= 0.50) return 'hc-mid';
+  if (v >= 0.40) return 'hc-mid-low';
+  return 'hc-low';
+}
+
+function buildHeatmap() {
+  const tbody = document.getElementById('heatmapBody');
+  heatmapData.forEach(row => {
+    const tr = document.createElement('tr');
+    const th = document.createElement('td');
+    th.className = 'heatmap-skill';
+    th.textContent = row.skill;
+    tr.appendChild(th);
+    row.scores.forEach((s, i) => {
+      const td = document.createElement('td');
+      td.className = `heatmap-cell ${getHeatClass(s)}`;
+      td.textContent = s.toFixed(2);
+      if (s < 0.60) td.style.boxShadow = '0 0 8px rgba(255,107,107,0.3)';
+      td.addEventListener('mouseenter', e => {
+        const tt = document.getElementById('tooltip');
+        tt.innerHTML = `<strong>${row.skill}</strong><br>${universities[i]}: <span style="color:${s<0.60?'#ff6b6b':'#00e5b0'}">${s.toFixed(2)}</span><br><span style="font-size:10px;color:#7a90b8">${s<0.60?'⚠ Below threshold — module triggered':'✓ Acceptable'}</span>`;
+        tt.style.display = 'block';
+        tt.style.left = (e.pageX + 12) + 'px';
+        tt.style.top = (e.pageY - 40) + 'px';
+      });
+      td.addEventListener('mouseleave', () => { document.getElementById('tooltip').style.display = 'none'; });
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  });
+}
+
+function buildGapBars() {
+  const container = document.getElementById('gapBars');
+  const topSkills = [
+    { name: "Generative AI", jd: 100, syllabus: 0, pct: 100 },
+    { name: "AI Data Analytics", jd: 92, syllabus: 14, pct: 78 },
+    { name: "AI Copywriting", jd: 88, syllabus: 16, pct: 72 },
+    { name: "Prompt Engineering", jd: 85, syllabus: 17, pct: 68 },
+    { name: "AI Video Creation", jd: 80, syllabus: 15, pct: 65 },
+    { name: "AI CRM Integration", jd: 76, syllabus: 18, pct: 58 },
+  ];
+  topSkills.forEach(s => {
+    const color = s.pct >= 70 ? 'var(--accent3)' : s.pct >= 50 ? 'var(--accent4)' : 'var(--accent)';
+    container.innerHTML += `
+    <div class="skill-gap-item">
+      <div class="skill-gap-header">
+        <div class="skill-gap-name">${s.name}</div>
+        <div class="skill-gap-score" style="color:${color}">${s.pct}% gap</div>
+      </div>
+      <div class="skill-gap-bar">
+        <div class="skill-gap-fill" style="width:${s.pct}%;background:${color};"></div>
+      </div>
+    </div>`;
+  });
+}
+
+function buildClusters() {
+  const c = document.getElementById('clusterList');
+  clusters.forEach(cl => {
+    c.innerHTML += `
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;padding:8px 12px;background:var(--surface2);border-radius:8px;">
+      <div style="width:8px;height:8px;border-radius:50%;background:${cl.color};flex-shrink:0;"></div>
+      <div style="flex:1;font-size:12px;font-weight:600;">${cl.name}</div>
+      <div style="font-family:var(--font-mono);font-size:10px;color:${cl.color};">${cl.gap}</div>
+      <div style="font-size:10px;color:var(--text-muted);">${cl.count} skills</div>
+    </div>`;
+  });
+}
+
+function buildSkill35() {
+  const g = document.getElementById('skill35Grid');
+  skill35.forEach((s, i) => {
+    const severity = i < 12 ? 'var(--accent3)' : i < 24 ? 'var(--accent4)' : 'var(--text-muted)';
+    const bg = i < 12 ? 'rgba(255,69,69,0.08)' : i < 24 ? 'rgba(255,192,77,0.08)' : 'rgba(120,120,160,0.05)';
+    g.innerHTML += `
+    <div style="background:${bg};border:1px solid rgba(255,255,255,0.05);border-left:3px solid ${severity};border-radius:8px;padding:8px 10px;">
+      <div style="font-size:10px;font-weight:600;color:${severity};font-family:var(--font-mono);">#${String(i+1).padStart(2,'0')}</div>
+      <div style="font-size:11px;margin-top:2px;">${s}</div>
+    </div>`;
+  });
+}
+
+// ─────────────────────────── TIMELINE ───────────────────────────
+
+function buildTimeline() {
+  const c = document.getElementById('timeline');
+  timeline.forEach((t, i) => {
+    const active = t.current ? `border-color:var(--accent4);background:rgba(255,192,77,0.1)` : t.done ? `border-color:var(--accent2);background:rgba(0,229,176,0.06)` : '';
+    const dot = t.current ? 'var(--accent4)' : t.done ? 'var(--accent2)' : 'var(--text-dim)';
+    c.innerHTML += `
+    <div style="display:flex;gap:14px;margin-bottom:14px;">
+      <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
+        <div style="width:12px;height:12px;border-radius:50%;background:${dot};flex-shrink:0;margin-top:3px;${t.current?'box-shadow:0 0 10px '+dot:''};"></div>
+        ${i < timeline.length-1 ? `<div style="width:2px;flex:1;background:var(--text-dim);margin-top:4px;"></div>` : ''}
+      </div>
+      <div style="flex:1;padding-bottom:${i<timeline.length-1?'0':'0'};">
+        <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-muted);margin-bottom:2px;">${t.date}</div>
+        <div style="font-size:13px;font-weight:600;margin-bottom:2px;">${t.event}</div>
+        <div style="font-size:11px;color:var(--text-muted);">${t.desc}</div>
+      </div>
+    </div>`;
+  });
+}
+
+// ─────────────────────────── COMPARISON TABLE ───────────────────────────
+
+function buildComparisonTable() {
+  const tbody = document.getElementById('comparisonTable');
+  comparisonData.forEach(row => {
+    tbody.innerHTML += `
+    <tr style="border-bottom:1px solid var(--border);">
+      <td style="padding:10px 14px;font-size:12px;font-weight:600;color:var(--text-muted);">${row[0]}</td>
+      <td style="padding:10px 14px;font-size:12px;color:var(--accent3);">${row[1]}</td>
+      <td style="padding:10px 14px;font-size:12px;color:var(--accent2);">${row[2]}</td>
+    </tr>`;
+  });
+}
+
+// ─────────────────────────── MODULES ───────────────────────────
+
+let currentModule = null;
+let currentTab = 'video';
+let quizState = { q: 0, answers: [], started: false, completed: false, preScore: null };
+let surveyState = { answers: {}, submitted: false };
+
+function buildModuleGrid() {
+  const grid = document.getElementById('moduleGrid');
+  modules.forEach(m => {
+    const card = document.createElement('div');
+    card.className = 'module-card';
+    card.id = `mcard-${m.id}`;
+    card.innerHTML = `
+    <div class="module-thumb" style="background:${m.color};">
+      <span style="font-size:36px;position:relative;z-index:1;">${m.emoji}</span>
+    </div>
+    <div class="module-body">
+      <div class="module-skill-tag">${m.skill}</div>
+      <div class="module-title">${m.title}</div>
+      <div class="module-meta"><span>⏱ ${m.duration}</span><span>❓ ${m.questions} questions</span></div>
+      <div class="module-status ${m.status === 'live' ? 'status-live' : m.status === 'wip' ? 'status-wip' : 'status-queued'}">${m.statusLabel}</div>
+    </div>`;
+    card.onclick = () => openModule(m.id);
+    grid.appendChild(card);
+  });
+}
+
+function openModule(id) {
+  currentModule = modules[id];
+  document.querySelectorAll('.module-card').forEach(c => c.classList.remove('active'));
+  document.getElementById(`mcard-${id}`).classList.add('active');
+  quizState = { q: 0, answers: [], started: false, completed: false, preScore: null };
+  surveyState = { answers: {}, submitted: false };
+  currentTab = 'video';
+  renderModuleDetail();
+  document.getElementById('module-detail').classList.add('visible');
+  document.getElementById('moduleDetailBox').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function renderModuleDetail() {
+  const m = currentModule;
+  const box = document.getElementById('moduleDetailBox');
+  box.innerHTML = `
+  <div class="module-detail-header">
+    <div>
+      <div style="font-size:28px;margin-bottom:8px;">${m.emoji}</div>
+      <div style="font-family:var(--font-mono);font-size:10px;color:var(--accent2);letter-spacing:0.12em;margin-bottom:6px;">${m.skill.toUpperCase()}</div>
+      <div style="font-family:var(--font-display);font-size:22px;font-weight:800;margin-bottom:6px;">${m.title}</div>
+      <div style="display:flex;gap:10px;align-items:center;">
+        <div class="module-status ${m.status === 'live' ? 'status-live' : 'status-wip'}">${m.statusLabel}</div>
+        <span style="font-size:12px;color:var(--text-muted);">⏱ ${m.duration}</span>
+        <span style="font-size:12px;color:var(--text-muted);">❓ ${m.questions} quiz questions</span>
+      </div>
+    </div>
+    <button class="close-btn" onclick="closeModule()">✕</button>
+  </div>
+  <div class="module-detail-content">
+    <div class="detail-tabs">
+      <button class="detail-tab ${currentTab==='video'?'active':''}" onclick="switchTab('video')">🎬 Video Lesson</button>
+      <button class="detail-tab ${currentTab==='summary'?'active':''}" onclick="switchTab('summary')">📖 Key Takeaways</button>
+      <button class="detail-tab ${currentTab==='quiz'?'active':''}" onclick="switchTab('quiz')">✅ Quiz</button>
+      <button class="detail-tab ${currentTab==='survey'?'active':''}" onclick="switchTab('survey')">📊 Impact Survey</button>
+    </div>
+    <div id="tab-video" class="tab-content ${currentTab==='video'?'active':''}">
+      ${renderVideoTab(m)}
+    </div>
+    <div id="tab-summary" class="tab-content ${currentTab==='summary'?'active':''}">
+      ${renderSummaryTab(m)}
+    </div>
+    <div id="tab-quiz" class="tab-content ${currentTab==='quiz'?'active':''}">
+      ${renderQuizTab(m)}
+    </div>
+    <div id="tab-survey" class="tab-content ${currentTab==='survey'?'active':''}">
+      ${renderSurveyTab(m)}
+    </div>
+  </div>`;
+}
+
+function renderVideoTab(m) {
+  return `
+  <div class="video-frame">
+    <button class="play-btn" onclick="handlePlay()">▶</button>
+    <div class="video-title-overlay">
+      <div style="font-family:var(--font-display);font-size:15px;font-weight:700;">${m.videoTitle}</div>
+      <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">AI-narrated · ${m.duration} · VAIL ${m.skill}</div>
+    </div>
+  </div>
+  <div class="video-info-bar">
+    <span class="video-tag">▶ AI-Narrated Video</span>
+    <span>⏱ ${m.duration}</span>
+    <span>🎓 VAIL Level 2 — Operational</span>
+    <span>📍 Marketing Pilot 2026</span>
+  </div>
+  <div style="background:var(--surface2);border-radius:12px;padding:18px;margin-top:16px;">
+    <div style="font-family:var(--font-display);font-size:14px;font-weight:700;margin-bottom:8px;">About this module</div>
+    <p style="font-size:13px;color:var(--text-muted);line-height:1.7;">${m.videoDesc}</p>
+    <div style="margin-top:14px;padding:12px;background:rgba(45,127,255,0.08);border-radius:8px;border-left:3px solid var(--accent);">
+      <div style="font-size:11px;color:var(--accent);font-weight:600;margin-bottom:4px;">💡 Auto-Deployed Because:</div>
+      <div style="font-size:12px;color:var(--text-muted);">Cosine similarity for "${m.skill}" fell below the 0.60 threshold across majority of universities. This module was automatically generated and deployed by the VAIL AI Curriculum Co-Pilot.</div>
+    </div>
+  </div>
+  <div style="margin-top:16px;display:flex;gap:10px;">
+    <button class="btn btn-primary" onclick="switchTab('summary')">Next: Key Takeaways →</button>
+    <button class="btn btn-secondary" onclick="switchTab('quiz')">Skip to Quiz</button>
+  </div>`;
+}
+
+function renderSummaryTab(m) {
+  let html = `
+  <div style="margin-bottom:20px;">
+    <div style="font-family:var(--font-display);font-size:18px;font-weight:800;margin-bottom:6px;">Key Learning Points</div>
+    <p style="color:var(--text-muted);font-size:13px;">Core concepts from the video — study these before taking the quiz</p>
+  </div>
+  <div class="knowledge-grid">`;
+  m.keypoints.forEach(kp => {
+    html += `
+    <div class="knowledge-item">
+      <div class="ki-num">${kp.num}</div>
+      <div class="ki-title">${kp.title}</div>
+      <div class="ki-desc">${kp.desc}</div>
+    </div>`;
+  });
+  html += `</div>
+  <div style="margin-top:20px;background:var(--surface2);border-radius:12px;padding:18px;">
+    <div style="font-size:13px;font-weight:600;margin-bottom:10px;">🎯 Learning Objectives</div>
+    <div style="font-size:12px;color:var(--text-muted);line-height:2;">
+      After completing this module, you will be able to:<br>
+      ✓ Explain the core concepts of ${m.skill} in a marketing context<br>
+      ✓ Apply these tools to real marketing workflow scenarios<br>
+      ✓ Critically evaluate AI outputs for quality and accuracy<br>
+      ✓ Demonstrate VAIL Level 2 (Operational) proficiency
+    </div>
+  </div>
+  <div style="margin-top:16px;">
+    <button class="btn btn-primary" onclick="switchTab('quiz')">Ready for Quiz →</button>
+  </div>`;
+  return html;
+}
+
+function renderQuizTab(m) {
+  if (!quizState.started) {
+    return `
+    <div style="text-align:center;padding:40px 20px;">
+      <div style="font-size:48px;margin-bottom:16px;">✅</div>
+      <div style="font-family:var(--font-display);font-size:22px;font-weight:800;margin-bottom:8px;">Knowledge Check</div>
+      <p style="color:var(--text-muted);margin-bottom:24px;max-width:400px;margin-left:auto;margin-right:auto;">5 questions testing your understanding of ${m.skill}. This acts as your <strong style="color:var(--accent)">Pre-Test</strong> if you haven't done the module, or <strong style="color:var(--accent2)">Post-Test</strong> after completing it.</p>
+      <div style="display:flex;gap:12px;justify-content:center;">
+        <button class="btn btn-primary" onclick="startQuiz()">Start Pre-Test</button>
+        <button class="btn btn-green" onclick="startPostQuiz()">Start Post-Test (after video)</button>
+      </div>
+    </div>`;
+  }
+  if (quizState.completed) {
+    const score = quizState.answers.filter((a,i) => a === m.quiz[i].ans).length;
+    const pct = Math.round((score/m.quiz.length)*100);
+    const isPre = quizState.isPreTest;
+    if (isPre) quizState.preScore = pct;
+    return `
+    <div class="quiz-result">
+      <div class="result-label">${isPre?'Pre-Test':'Post-Test'} Result</div>
+      <div class="result-score">${pct}%</div>
+      <div style="color:var(--text-muted);margin-bottom:20px;">You got ${score} out of ${m.quiz.length} correct</div>
+      ${!isPre && quizState.preScore !== null ? `
+      <div style="background:rgba(0,229,176,0.1);border:1px solid rgba(0,229,176,0.3);border-radius:12px;padding:16px;margin-bottom:20px;">
+        <div style="font-size:13px;font-weight:600;color:var(--accent2);">📈 Improvement Detected</div>
+        <div style="font-family:var(--font-display);font-size:28px;font-weight:800;color:var(--accent2);">+${pct - quizState.preScore}pp</div>
+        <div style="font-size:12px;color:var(--text-muted);">Pre: ${quizState.preScore}% → Post: ${pct}%</div>
+      </div>` : ''}
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+        <button class="btn btn-secondary btn-sm" onclick="resetQuiz()">Retake Quiz</button>
+        <button class="btn btn-primary btn-sm" onclick="switchTab('survey')">Submit & View Survey →</button>
+      </div>
+    </div>`;
+  }
+  const q = m.quiz[quizState.q];
+  let progressDots = '';
+  m.quiz.forEach((_, i) => {
+    const cl = i < quizState.q ? 'done' : i === quizState.q ? 'current' : '';
+    progressDots += `<div class="quiz-dot ${cl}"></div>`;
+  });
+  let optHtml = '';
+  q.opts.forEach((opt, i) => {
+    const letter = ['A','B','C','D'][i];
+    optHtml += `<button class="option-btn" onclick="selectAnswer(${i})"><span class="option-letter">${letter}</span>${opt}</button>`;
+  });
+  return `
+  <div class="quiz-progress">${progressDots}</div>
+  <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-muted);margin-bottom:12px;">Question ${quizState.q+1} of ${m.quiz.length} · ${quizState.isPreTest ? 'PRE-TEST' : 'POST-TEST'}</div>
+  <div class="question-card">
+    <div class="question-text">${q.q}</div>
+    ${optHtml}
+  </div>
+  <div class="quiz-nav">
+    <button class="btn btn-secondary btn-sm" onclick="resetQuiz()">← Reset</button>
+    <span style="font-size:11px;color:var(--text-muted);">Select an answer to continue</span>
+  </div>`;
+}
+
+function startQuiz() { quizState.started = true; quizState.isPreTest = true; renderModuleDetail(); switchTab('quiz'); }
+function startPostQuiz() { quizState.started = true; quizState.isPreTest = false; renderModuleDetail(); switchTab('quiz'); }
+function resetQuiz() { quizState = { q: 0, answers: [], started: false, completed: false, preScore: quizState.preScore }; renderModuleDetail(); switchTab('quiz'); }
+
+function selectAnswer(idx) {
+  const m = currentModule;
+  quizState.answers.push(idx);
+  const correct = idx === m.quiz[quizState.q].ans;
+  // visual flash
+  const btns = document.querySelectorAll('.option-btn');
+  btns[idx].classList.add(correct ? 'correct' : 'wrong');
+  btns[m.quiz[quizState.q].ans].classList.add('correct');
+  setTimeout(() => {
+    quizState.q++;
+    if (quizState.q >= m.quiz.length) quizState.completed = true;
+    renderModuleDetail(); switchTab('quiz');
+  }, 900);
+}
+
+// SURVEY
+function renderSurveyTab(m) {
+  if (surveyState.submitted) {
+    return renderSurveyResults();
+  }
+  const questions = [
+    { id: 'confidence', q: `How confident are you NOW in applying ${m.skill} in a real marketing job?` },
+    { id: 'relevance', q: 'How relevant is this content to what you expect in the job market?' },
+    { id: 'difficulty', q: 'How would you rate the difficulty of this module?' },
+    { id: 'recommend', q: 'How likely are you to recommend this training to classmates?' },
+  ];
+  const scale = ['1\nStrongly\nDisagree', '2', '3\nNeutral', '4', '5\nStrongly\nAgree'];
+  let html = `
+  <div style="margin-bottom:20px;">
+    <div style="font-family:var(--font-display);font-size:18px;font-weight:800;margin-bottom:6px;">Post-Module Impact Survey</div>
+    <p style="color:var(--text-muted);font-size:13px;">Help us measure how much this module improved your AI skills. Your responses improve the system for future students.</p>
+  </div>`;
+  questions.forEach(q => {
+    html += `
+    <div class="survey-question">
+      <div class="survey-q-text">${q.q}</div>
+      <div class="likert-scale">`;
+    scale.forEach((s, i) => {
+      const val = i+1;
+      const selected = surveyState.answers[q.id] === val ? 'selected' : '';
+      html += `<button class="likert-btn ${selected}" onclick="surveySelect('${q.id}', ${val})">${s}</button>`;
+    });
+    html += `</div></div>`;
+  });
+  html += `
+  <div style="margin-top:8px;">
+    <div class="survey-q-text">Before this module, did you feel your university syllabus prepared you for AI marketing roles?</div>
+    <div style="display:flex;gap:10px;">
+      <button class="likert-btn ${surveyState.answers.prepared === 'yes' ? 'selected' : ''}" onclick="surveySelect('prepared','yes')" style="flex:0;padding:10px 20px;">Yes</button>
+      <button class="likert-btn ${surveyState.answers.prepared === 'no' ? 'selected' : ''}" onclick="surveySelect('prepared','no')" style="flex:0;padding:10px 20px;">No</button>
+      <button class="likert-btn ${surveyState.answers.prepared === 'partial' ? 'selected' : ''}" onclick="surveySelect('prepared','partial')" style="flex:0;padding:10px 20px;">Partially</button>
+    </div>
+  </div>
+  <div style="margin-top:20px;">
+    <button class="btn btn-green" onclick="submitSurvey()">Submit Survey & See Results →</button>
+  </div>`;
+  return html;
+}
+
+function surveySelect(id, val) {
+  surveyState.answers[id] = val;
+  renderModuleDetail(); switchTab('survey');
+}
+function submitSurvey() {
+  surveyState.submitted = true;
+  renderModuleDetail(); switchTab('survey');
+}
+
+function renderSurveyResults() {
+  return `
+  <div style="margin-bottom:20px;">
+    <div style="font-family:var(--font-display);font-size:18px;font-weight:800;margin-bottom:6px;">📊 Aggregate Impact Results</div>
+    <p style="color:var(--text-muted);font-size:13px;">Based on 18 pilot students (9 urban · 9 rural) across Module 1: Generative AI for Marketers</p>
+  </div>
+
+  <div class="improvement-display" style="background:var(--surface2);border-radius:14px;margin-bottom:20px;">
+    <div class="improve-before">
+      <div style="font-size:12px;color:var(--text-muted);margin-bottom:4px;">AVG PRE-TEST SCORE</div>
+      <div class="improve-num" style="color:var(--accent3);">38%</div>
+      <div style="font-size:11px;color:var(--text-muted);">Before module</div>
+    </div>
+    <div class="improve-arrow">→</div>
+    <div class="improve-after">
+      <div style="font-size:12px;color:var(--text-muted);margin-bottom:4px;">AVG POST-TEST SCORE</div>
+      <div class="improve-num" style="color:var(--accent2);">74%</div>
+      <div style="font-size:11px;color:var(--text-muted);">After module</div>
+    </div>
+    <div style="text-align:center;flex:1;">
+      <div style="font-size:12px;color:var(--text-muted);margin-bottom:4px;">IMPROVEMENT</div>
+      <div style="font-family:var(--font-display);font-size:42px;font-weight:800;color:var(--accent);">+36pp</div>
+      <div style="font-size:11px;color:var(--accent2);">+94% relative gain</div>
+    </div>
+  </div>
+
+  <div class="improve-bars">
+    <div class="improve-bar-item">
+      <div class="improve-bar-label">Urban Students (n=9)</div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px;">
+        <div class="improve-bar-track" style="flex:1;"><div class="improve-bar-before" style="width:42%"></div></div>
+        <span style="font-family:var(--font-mono);font-size:10px;color:var(--accent3);width:30px;">42%</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div class="improve-bar-track" style="flex:1;"><div class="improve-bar-after" style="width:80%"></div></div>
+        <span style="font-family:var(--font-mono);font-size:10px;color:var(--accent2);width:30px;">80%</span>
+      </div>
+    </div>
+    <div class="improve-bar-item">
+      <div class="improve-bar-label">Rural Students (n=9)</div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px;">
+        <div class="improve-bar-track" style="flex:1;"><div class="improve-bar-before" style="width:28%"></div></div>
+        <span style="font-family:var(--font-mono);font-size:10px;color:var(--accent3);width:30px;">28%</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div class="improve-bar-track" style="flex:1;"><div class="improve-bar-after" style="width:65%"></div></div>
+        <span style="font-family:var(--font-mono);font-size:10px;color:var(--accent2);width:30px;">65%</span>
+      </div>
+    </div>
+    <div class="improve-bar-item">
+      <div class="improve-bar-label">Skill Confidence (post-survey avg)</div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div class="improve-bar-track" style="flex:1;"><div class="improve-bar-after" style="width:76%"></div></div>
+        <span style="font-family:var(--font-mono);font-size:10px;color:var(--accent2);width:30px;">3.8/5</span>
+      </div>
+    </div>
+    <div class="improve-bar-item">
+      <div class="improve-bar-label">Would recommend to classmates</div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div class="improve-bar-track" style="flex:1;"><div class="improve-bar-after" style="width:88%"></div></div>
+        <span style="font-family:var(--font-mono);font-size:10px;color:var(--accent2);width:30px;">4.4/5</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:20px;background:rgba(0,229,176,0.06);border:1px solid rgba(0,229,176,0.2);border-radius:12px;padding:16px;">
+    <div style="font-size:13px;font-weight:700;color:var(--accent2);margin-bottom:6px;">🔍 Key Finding: Digital Equity Observed</div>
+    <div style="font-size:12px;color:var(--text-muted);line-height:1.7;">
+      Rural students started with lower baseline scores (28% vs 42% urban) but demonstrated a <strong style="color:var(--accent2)">larger relative improvement (+37pp vs +38pp)</strong>, suggesting that structured AI micro-modules can effectively bridge the urban-rural digital literacy gap when access barriers are removed. This finding supports the VAIL-OEH Digital Equity mandate.
+    </div>
+  </div>`;
+}
+
+function closeModule() {
+  document.getElementById('module-detail').classList.remove('visible');
+  document.querySelectorAll('.module-card').forEach(c => c.classList.remove('active'));
+}
+
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.detail-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  const tabEl = document.querySelector(`.detail-tab[onclick="switchTab('${tab}')"]`);
+  if (tabEl) tabEl.classList.add('active');
+  const content = document.getElementById(`tab-${tab}`);
+  if (content) content.classList.add('active');
+}
+
+function handlePlay() {
+  const btn = document.querySelector('.play-btn');
+  if (btn) {
+    btn.textContent = '⏸';
+    btn.style.background = 'linear-gradient(135deg, #059669, #00e5b0)';
+    setTimeout(() => { btn.textContent = '▶'; btn.style.background = ''; }, 3000);
+  }
+}
+
+// ─────────────────────────── PILOT SECTION ───────────────────────────
+
+function buildStudentGrid() {
+  const g = document.getElementById('studentGrid');
+  students.forEach(s => {
+    const imp = s.post - s.pre;
+    g.innerHTML += `
+    <div class="student-card">
+      <div class="student-avatar" style="background:${s.color}22;color:${s.color};">${s.avatar}</div>
+      <div class="student-name">${s.name}</div>
+      <div class="student-type">${s.type}</div>
+      <div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:4px;">
+        <span style="color:var(--accent3);">${s.pre}%</span>
+        <span style="color:var(--accent2);">${s.post}%</span>
+      </div>
+      <div class="student-progress">
+        <div class="student-prog-fill" style="width:${s.post}%;"></div>
+      </div>
+      <div style="font-size:10px;color:var(--accent2);text-align:center;margin-top:4px;font-weight:700;">+${imp}pp</div>
+    </div>`;
+  });
+}
+
+let currentCohort = 'all';
+function switchCohort(c, el) {
+  currentCohort = c;
+  document.querySelectorAll('.cohort-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  buildImprovementChart();
+}
+
+function buildImprovementChart() {
+  const c = document.getElementById('improvementChart');
+  const filtered = currentCohort === 'all' ? students :
+    students.filter(s => s.type.toLowerCase() === currentCohort);
+  let bars = filtered.map(s => {
+    const color = s.type === 'Urban' ? 'var(--accent)' : 'var(--accent2)';
+    return `
+    <div style="margin-bottom:10px;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:3px;">
+        <span style="font-size:10px;">${s.name}</span>
+        <div style="display:flex;gap:8px;">
+          <span style="font-size:10px;color:var(--accent3);">${s.pre}%</span>
+          <span style="font-size:10px;color:${color};">${s.post}%</span>
+          <span style="font-size:10px;font-weight:700;color:${color};">+${s.post-s.pre}</span>
+        </div>
+      </div>
+      <div style="position:relative;height:8px;background:rgba(255,255,255,0.04);border-radius:4px;overflow:hidden;">
+        <div style="position:absolute;left:0;top:0;height:100%;width:${s.pre}%;background:rgba(255,107,107,0.4);border-radius:4px;"></div>
+        <div style="position:absolute;left:0;top:0;height:100%;width:${s.post}%;background:${color};opacity:0.7;border-radius:4px;"></div>
+      </div>
+    </div>`;
+  }).join('');
+  c.innerHTML = `
+  <div style="display:flex;gap:16px;margin-bottom:12px;font-size:10px;color:var(--text-muted);">
+    <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:4px;background:rgba(255,107,107,0.5);border-radius:2px;display:inline-block;"></span>Pre-test</span>
+    <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:4px;background:var(--accent);border-radius:2px;display:inline-block;"></span>Post-test</span>
+  </div>
+  ${bars}`;
+}
+
+function buildResultsTable() {
+  const tbody = document.getElementById('resultsBody');
+  const results = [
+    { name: "Generative AI for Marketers", pre: 38, post: 74, urban: 80, rural: 65, imp: "+36pp", status: "Completed" },
+    { name: "AI Data Analytics", pre: 32, post: 71, urban: 76, rural: 64, imp: "+39pp", status: "Completed" },
+    { name: "Prompt Engineering", pre: 41, post: 73, urban: 78, rural: 67, imp: "+32pp", status: "In Progress" },
+    { name: "AI Multimedia & Design", pre: 28, post: 69, urban: 74, rural: 62, imp: "+41pp", status: "In Progress" },
+  ];
+  results.forEach(r => {
+    const done = r.status === 'Completed';
+    tbody.innerHTML += `
+    <tr style="border-bottom:1px solid var(--border);">
+      <td style="padding:10px 14px;font-size:13px;font-weight:600;">${r.name}</td>
+      <td style="padding:10px 14px;font-size:13px;text-align:center;color:var(--accent3);font-family:var(--font-mono);">${r.pre}%</td>
+      <td style="padding:10px 14px;font-size:13px;text-align:center;color:var(--accent2);font-family:var(--font-mono);">${done ? r.post + '%' : '—'}</td>
+      <td style="padding:10px 14px;font-size:12px;text-align:center;color:var(--accent);font-family:var(--font-mono);">${done ? r.urban + '%' : '—'}</td>
+      <td style="padding:10px 14px;font-size:12px;text-align:center;color:var(--accent2);font-family:var(--font-mono);">${done ? r.rural + '%' : '—'}</td>
+      <td style="padding:10px 14px;text-align:center;">
+        <span style="font-family:var(--font-display);font-size:14px;font-weight:800;color:${done?'var(--accent2)':'var(--text-muted)'};">${done ? r.imp : '⏳'}</span>
+      </td>
+      <td style="padding:10px 14px;text-align:center;">
+        <span class="module-status ${done?'status-live':'status-wip'}" style="display:inline-block;">${r.status}</span>
+      </td>
+    </tr>`;
+  });
+}
+
+function buildSurveyInsights() {
+  const c = document.getElementById('surveyInsights');
+  const insights = [
+    { q: "Did your syllabus prepare you for AI marketing roles?", yes: 0, no: 72, partial: 28 },
+    { q: "Post-module skill confidence (1-5)", score: 3.8 },
+    { q: "Would recommend module to classmates", score: 4.4 },
+    { q: "Module content relevance to job market", score: 4.2 },
+  ];
+  c.innerHTML = `
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+    <div style="background:var(--surface2);border-radius:12px;padding:18px;">
+      <div style="font-size:13px;font-weight:700;margin-bottom:14px;">Syllabus AI Readiness Perception</div>
+      <div style="margin-bottom:10px;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px;font-size:11px;color:var(--text-muted);">
+          <span>Syllabus prepared me for AI</span><span style="color:var(--accent2);">0%</span>
+        </div>
+        <div class="skill-gap-bar"><div class="skill-gap-fill" style="width:0%;background:var(--accent2)"></div></div>
+      </div>
+      <div style="margin-bottom:10px;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px;font-size:11px;color:var(--text-muted);">
+          <span>Partially prepared</span><span style="color:var(--accent4);">28%</span>
+        </div>
+        <div class="skill-gap-bar"><div class="skill-gap-fill" style="width:28%;background:var(--accent4)"></div></div>
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px;font-size:11px;color:var(--text-muted);">
+          <span>Not prepared at all</span><span style="color:var(--accent3);">72%</span>
+        </div>
+        <div class="skill-gap-bar"><div class="skill-gap-fill" style="width:72%;background:var(--accent3)"></div></div>
+      </div>
+    </div>
+    <div style="background:var(--surface2);border-radius:12px;padding:18px;">
+      <div style="font-size:13px;font-weight:700;margin-bottom:14px;">Post-Module Ratings (avg)</div>
+      ${[
+        ['Skill Confidence', 3.8, 5],
+        ['Would Recommend', 4.4, 5],
+        ['Content Relevance', 4.2, 5],
+        ['Module Quality', 4.0, 5],
+      ].map(([label, score, max]) => `
+      <div style="margin-bottom:10px;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px;font-size:11px;color:var(--text-muted);">
+          <span>${label}</span><span style="color:var(--accent2);font-family:var(--font-mono);">${score}/${max}</span>
+        </div>
+        <div class="skill-gap-bar"><div class="skill-gap-fill" style="width:${(score/max)*100}%;background:var(--accent2)"></div></div>
+      </div>`).join('')}
+    </div>
+  </div>
+  <div style="background:rgba(45,127,255,0.06);border:1px solid rgba(45,127,255,0.15);border-radius:12px;padding:16px;margin-top:16px;">
+    <div style="font-size:13px;font-weight:700;color:var(--accent);margin-bottom:8px;">💬 Student Feedback Highlights</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">
+      ${[
+        { q: '"This is exactly what my marketing courses never taught me."', name: 'Urban student, Y3' },
+        { q: '"The video was easy to follow and the quiz helped me check my understanding."', name: 'Rural student, Y4' },
+        { q: '"I didn\'t know AI could do this for marketing. I feel more job-ready now."', name: 'Rural student, Y3' },
+      ].map(f => `
+      <div style="background:var(--surface);border-radius:10px;padding:12px;border:1px solid var(--border);">
+        <div style="font-size:12px;color:var(--text-muted);font-style:italic;margin-bottom:8px;">${f.q}</div>
+        <div style="font-size:10px;color:var(--accent);font-weight:600;">— ${f.name}</div>
+      </div>`).join('')}
+    </div>
+  </div>`;
+}
+
+// ─────────────────────────── INIT ───────────────────────────
+
+window.onload = () => {
+  buildHeatmap();
+  buildGapBars();
+  buildClusters();
+  buildSkill35();
+  buildTimeline();
+  buildComparisonTable();
+  buildModuleGrid();
+  buildStudentGrid();
+  buildImprovementChart();
+  buildResultsTable();
+  buildSurveyInsights();
+};
+</script>
+</body>
+</html>
